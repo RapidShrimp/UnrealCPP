@@ -45,9 +45,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Rotating")
 	void StartRotating();
 
+	UFUNCTION(BlueprintCallable, Category = "Rotating")
+	void AddRotationSpeed();
+	
 	UFUNCTION(BlueprintImplementableEvent , Category = "Rotating")
 	void DiscoMode();
-	
+	UFUNCTION(BlueprintImplementableEvent , Category = "Rotating")
+	void Float();
+	bool bIsFloating = false;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

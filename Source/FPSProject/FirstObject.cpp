@@ -36,6 +36,16 @@ void AFirstObject::StartRotating()
 	DiscoMode();
 }
 
+void AFirstObject::AddRotationSpeed()
+{
+	float Speed = _RotationComp->RotationRate.Yaw += 10;
+	if (!bIsFloating && Speed >= 800)
+	{
+		Float();
+		bIsFloating = true;
+	}
+}
+
 // Called every frame
 void AFirstObject::Tick(float DeltaTime)
 {
