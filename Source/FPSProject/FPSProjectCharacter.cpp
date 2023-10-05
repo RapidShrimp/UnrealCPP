@@ -106,6 +106,5 @@ void AFPSProjectCharacter::SetHasRifle(bool bNewHasRifle)
 
 bool AFPSProjectCharacter::GetHasRifle()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Rifle Check"));
 	return bHasRifle;
 }
