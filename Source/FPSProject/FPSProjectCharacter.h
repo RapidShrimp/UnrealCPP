@@ -39,6 +39,12 @@ class AFPSProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
 
+	/** Sprint Input Action */
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
+	class UInputAction* CrouchAction;
 	
 public:
 	AFPSProjectCharacter();
@@ -71,17 +77,29 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void SprintStart();
+	void SprintStop();
+	void StartCrouch();
+	void StopCrouch();
+
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
+		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
 public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
+	float DefaultFieldOfView = 90;
+	float DefaultWalkSpeed;
+	
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
 
 };
 
