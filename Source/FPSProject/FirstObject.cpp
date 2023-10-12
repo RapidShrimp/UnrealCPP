@@ -3,6 +3,8 @@
 
 #include "FirstObject.h"
 #include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
+#include "HealthComponent.h"
 #include "GameFramework/RotatingMovementComponent.h"
 
 // Sets default values
@@ -21,13 +23,18 @@ AFirstObject::AFirstObject()
 
 	_RotationComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
 	_RotationComp->SetAutoActivate(false);
+
+	_BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	_BoxComponent->SetupAttachment(_Root);
+
+	_HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 // Called when the game starts or when spawned
 void AFirstObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	_BoxComponent->OnComponentHit.AddUniqueDynamic(this,&AFirstObject::Handle_ComponentHit);
 }
 
 void AFirstObject::StartRotating()
@@ -51,5 +58,13 @@ void AFirstObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AFirstObject::Handle_ComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if(_HealthComponent!=nullptr)
+	{
+		
+	}
 }
 

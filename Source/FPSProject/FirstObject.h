@@ -6,8 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "FirstObject.generated.h"
 
+class UHealthComponent;
 class UArrowComponent;
 class URotatingMovementComponent;
+class UBoxComponent;
 
 UCLASS(Abstract)
 class FPSPROJECT_API AFirstObject : public AActor
@@ -34,6 +36,12 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<URotatingMovementComponent> _RotationComp;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UBoxComponent> _BoxComponent;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UHealthComponent> _HealthComponent;
 #pragma endregion
 
 
@@ -57,4 +65,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+private:
+	UFUNCTION()
+	void Handle_ComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };
