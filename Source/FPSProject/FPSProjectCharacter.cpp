@@ -7,6 +7,8 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "AI/NavigationSystemBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,7 +36,7 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 	Mesh1P->CastShadow = false;
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
-
+	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void AFPSProjectCharacter::BeginPlay()
@@ -66,6 +68,12 @@ void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Move);
+		
+		EnhancedInputComponent->BindAction(SprintAction,ETriggerEvent::Triggered, this , &AFPSProjectCharacter::SprintStart);
+		EnhancedInputComponent->BindAction(SprintAction,ETriggerEvent::Completed, this , &AFPSProjectCharacter::SprintStop);
+
+		EnhancedInputComponent->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&AFPSProjectCharacter::StartCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction,ETriggerEvent::Completed,this,&AFPSProjectCharacter::StopCrouch);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Look);
@@ -98,6 +106,35 @@ void AFPSProjectCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+
+void AFPSProjectCharacter::SprintStart()
+{
+	if(!bIsCrouched)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * 1.2;
+		LerpCamFOV(DefaultFieldOfView*1.1,GetFirstPersonCameraComponent()->FieldOfView);
+	}
+}
+
+void AFPSProjectCharacter::SprintStop()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+	LerpCamFOV(DefaultFieldOfView,GetFirstPersonCameraComponent()->FieldOfView);
+}
+
+void AFPSProjectCharacter::StartCrouch()
+{
+	SprintStop();
+	UE_LOG(LogTemp,Warning,TEXT("CrouchStart"))
+	Crouch();
+}
+
+void AFPSProjectCharacter::StopCrouch()
+{
+	UE_LOG(LogTemp,Warning,TEXT("CrouchEnd"))
+	UnCrouch();
+}
+
 
 void AFPSProjectCharacter::SetHasRifle(bool bNewHasRifle)
 {
