@@ -85,7 +85,6 @@ protected:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
