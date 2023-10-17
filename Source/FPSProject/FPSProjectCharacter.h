@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Weapon.h"
 #include "FPSProjectCharacter.generated.h"
 
 class UInputComponent;
@@ -13,6 +14,7 @@ class USceneComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
+class AWeapon;
 
 UCLASS(config=Game)
 class AFPSProjectCharacter : public ACharacter
@@ -58,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Weapons")
+	TObjectPtr<AWeapon> AWeapon;
+	
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
