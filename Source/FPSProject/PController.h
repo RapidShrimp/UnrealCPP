@@ -51,5 +51,12 @@ protected:
 	virtual void BeginPlay() override;
 
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
-	
+	/*void SprintStart();
+	void SprintStop();
+	void StartCrouch();
+	void StopCrouch();
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void StartJumping();
+	void StopJumping();*/
 };

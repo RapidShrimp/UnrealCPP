@@ -15,20 +15,20 @@ void APController::SetupInputComponent()
 		//Jumping
 		EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::Debug);
 
-		/*
-		 EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &AFPSProjectCharacter::StopJumping);
-
+		/*EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::StartJumping);
+		EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &APController::StopJumping);
+		
 		//Moving
-		EIP->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Move);
+		EIP->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APController::Move);
 		
-		EIP->BindAction(SprintAction,ETriggerEvent::Triggered, this , &AFPSProjectCharacter::SprintStart);
-		EIP->BindAction(SprintAction,ETriggerEvent::Completed, this , &AFPSProjectCharacter::SprintStop);
+		EIP->BindAction(SprintAction,ETriggerEvent::Triggered, this , &APController::SprintStart);
+		EIP->BindAction(SprintAction,ETriggerEvent::Completed, this , &APController::SprintStop);
 		
-		EIP->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&AFPSProjectCharacter::StartCrouch);
-		EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&AFPSProjectCharacter::StopCrouch);
+		EIP->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&APController::StartCrouch);
+		EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::StopCrouch);
 
 		//Looking
-		EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Look);*/
+		EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::Look);*/
 	}
 }
 

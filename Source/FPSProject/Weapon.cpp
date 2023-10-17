@@ -5,9 +5,13 @@
 
 #include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "FPSProjectCharacter.h"
+#include "Components/SphereComponent.h"
+
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "FPSProjectCharacter.h"
+
 // Sets default values
 AWeapon::AWeapon()
 {
@@ -15,13 +19,33 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	_Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	
 	_SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	_SkeletonMesh->SetupAttachment(_Root);
+	
 	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	_Arrow->SetupAttachment(_SkeletonMesh);
+	
+	_SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("PickupBox"));
+	_SphereCollider->SetupAttachment(_SkeletonMesh);
+	_SphereCollider->SetSphereRadius(45.0f);
 
 }
 
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	_SphereCollider->OnComponentBeginOverlap.AddDynamic(this,&AWeapon::OnOverlap);
+}
+
+void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
+	{
+		if(!PlayerCharacter->GetHasRifle())
+			AttachWeapon(PlayerCharacter);
+	} 
+}
 
 void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 {
@@ -36,7 +60,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 	Character->SetHasRifle(true);
 
-	// Set up action bindings
+	// Set up ActionMapping & Bindings
 	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -45,7 +69,8 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 		}
 		if(UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EIC->BindAction(FireAction, ETriggerEvent::Triggered, this , &AWeapon::Fire);
+			/*TODO Please have a look at this binding, broken as interface function has a return type other than void which cannot be bound */
+			//EIC->BindAction(FireAction, ETriggerEvent::Triggered, this , &AWeapon::Fire);
 		}
 	}
 }
@@ -54,11 +79,23 @@ void AWeapon::DropWeapon(AFPSProjectCharacter* TargetCharacter)
 {
 	if (TargetCharacter != nullptr)
 	{
-		//Remove From Parent
-		//Disable Input Mapping
-		//Disable Input Action
-		//Enable Collider
-		//Place on Floor
+		if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			{
+				Subsystem->RemoveMappingContext(FireMappingContext);
+			}
+			if(UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+			{
+				/*	TODO Drop Weapon
+				 * - Remove Bindings
+				 * - Remove From Parent & Place on Floor (Physics)
+				 * - Enable Collider
+				 */
+				
+				//EIC->RemoveActionBinding(FireAction);
+			}
+		}
 	}
 }
 
