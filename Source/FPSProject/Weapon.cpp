@@ -58,21 +58,17 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
-	Character->SetHasRifle(true);
 
-	// Set up ActionMapping & Bindings
-	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
+	Character->SetRifle(true,this);
+	// TODO Set up ActionMapping & Bindings
+	
+	/*if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(FireMappingContext, 1);
 		}
-		if(UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
-		{
-			/*TODO Please have a look at this binding, broken as interface function has a return type other than void which cannot be bound */
-			//EIC->BindAction(FireAction, ETriggerEvent::Triggered, this , &AWeapon::Fire);
-		}
-	}
+	}*/
 }
 
 void AWeapon::DropWeapon(AFPSProjectCharacter* TargetCharacter)
@@ -85,16 +81,12 @@ void AWeapon::DropWeapon(AFPSProjectCharacter* TargetCharacter)
 			{
 				Subsystem->RemoveMappingContext(FireMappingContext);
 			}
-			if(UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
-			{
+				RemoveFromRoot();
 				/*	TODO Drop Weapon
 				 * - Remove Bindings
 				 * - Remove From Parent & Place on Floor (Physics)
 				 * - Enable Collider
 				 */
-				
-				//EIC->RemoveActionBinding(FireAction);
-			}
 		}
 	}
 }
@@ -102,5 +94,6 @@ void AWeapon::DropWeapon(AFPSProjectCharacter* TargetCharacter)
 
 bool AWeapon::Fire_Implementation()
 {
+	UE_LOG(LogTemp,Display,TEXT("FIRING"))
 	return true;
 }

@@ -19,7 +19,7 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	_CurrentHealth = _MaxHealth;
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
+	GetOwner()->OnTakeAnyDamage.AddUniqueDynamic(this, &UHealthComponent::DamageTaken);
 }
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
@@ -27,6 +27,7 @@ void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDa
 	const float Change = FMath::Min(_CurrentHealth,Damage);
 	_CurrentHealth -= Change;
 	UE_LOG(LogTemp,Display,TEXT("Damage for %f, %f health remaining"), Change, _CurrentHealth);
-	if (_CurrentHealth == 0.0f){UE_LOG(LogTemp,Display,TEXT("DEAD"));}
+	OnHealthComponentDamaged.Broadcast(_CurrentHealth,_MaxHealth,Change);
+	if(_CurrentHealth == 0.0f){OnHealthComponentDead.Broadcast(InstigatedBy);}
 }
 

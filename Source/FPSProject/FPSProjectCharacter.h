@@ -47,6 +47,10 @@ class AFPSProjectCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	class UInputAction* CrouchAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* FireAction;
+
 	
 public:
 	AFPSProjectCharacter();
@@ -59,40 +63,32 @@ public:
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Weapons")
-	TObjectPtr<AWeapon> AWeapon;
 	
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
 
-	/** Setter to set the bool */
+	/** Setter & Getter for bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasRifle(bool bNewHasRifle);
-
-	/** Getter for the bool */
+	void SetRifle(bool bNewHasRifle,AWeapon* Weapon);
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
 
 protected:
-	/** Called for movement input */
+
+	TObjectPtr<AWeapon> MyWeapon = nullptr;
+	
+	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
 	void SprintStart();
 	void SprintStop();
 	void StartCrouch();
 	void StopCrouch();
-
+	void UseWeapon();
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
 public:

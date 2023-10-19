@@ -10,8 +10,8 @@
 
 class USkeletalMeshComponent;
 class UArrowComponent;
-class AFPSProjectCharacter;
 class USphereComponent;
+class AFPSProjectCharacter;
 
 UCLASS(Abstract)
 class FPSPROJECT_API AWeapon : public AActor , public  IFireable
@@ -24,8 +24,6 @@ public:
 	
 	virtual  bool Fire_Implementation() override;
 
-
-	
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachWeapon(AFPSProjectCharacter* TargetCharacter);
@@ -36,11 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* FireMappingContext;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* FireAction;
-	
 protected:
-
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USceneComponent> _Root;

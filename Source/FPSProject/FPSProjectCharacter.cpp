@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "AI/NavigationSystemBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,6 @@ void AFPSProjectCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -77,6 +77,8 @@ void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Look);
+
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this , &AFPSProjectCharacter::UseWeapon);
 	}
 }
 
@@ -135,10 +137,20 @@ void AFPSProjectCharacter::StopCrouch()
 	UnCrouch();
 }
 
+void AFPSProjectCharacter::UseWeapon()
+{
+	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
+	{
+		IFireable::Execute_Fire(MyWeapon);
+	}
+}
 
-void AFPSProjectCharacter::SetHasRifle(bool bNewHasRifle)
+void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
 	bHasRifle = bNewHasRifle;
+	if(bHasRifle)
+	{
+	}
 }
 
 bool AFPSProjectCharacter::GetHasRifle()
