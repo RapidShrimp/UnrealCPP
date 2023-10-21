@@ -45,19 +45,19 @@ void AFPSProjectCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
+	/*//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
+	}*/
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
 
-void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+/*void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
@@ -80,7 +80,7 @@ void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this , &AFPSProjectCharacter::UseWeapon);
 	}
-}
+}*/
 
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)

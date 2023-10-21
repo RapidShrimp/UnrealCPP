@@ -29,19 +29,20 @@ class AFPSProjectCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
-	/** MappingContext */
+	
+	/*/** MappingContext #1#
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
+	/** Jump Input Action #1#
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* JumpAction;
 
-	/** Move Input Action */
+	/** Move Input Action #1#
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
 
-	/** Sprint Input Action */
+	/** Sprint Input Action #1#
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* SprintAction;
 
@@ -51,6 +52,10 @@ class AFPSProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
+	/** Look Input Action #1#
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LookAction;*/
+	
 	
 public:
 	AFPSProjectCharacter();
@@ -59,11 +64,6 @@ protected:
 	virtual void BeginPlay();
 
 public:
-		
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
-	
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
@@ -78,7 +78,14 @@ protected:
 
 	TObjectPtr<AWeapon> MyWeapon = nullptr;
 	
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+	//virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
+		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
+	// End of APawn interface
+
+public:
+	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void SprintStart();
@@ -87,11 +94,6 @@ protected:
 	void StopCrouch();
 	void UseWeapon();
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
-		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
-	// End of APawn interface
-
-public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
 	float DefaultFieldOfView = 90;
 	float DefaultWalkSpeed;

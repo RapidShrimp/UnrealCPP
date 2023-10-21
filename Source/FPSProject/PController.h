@@ -20,14 +20,14 @@ class FPSPROJECT_API APController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
-	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LookAction;
+	
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> JumpAction;
@@ -51,12 +51,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
-	/*void SprintStart();
-	void SprintStop();
-	void StartCrouch();
-	void StopCrouch();
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	void StartJumping();
-	void StopJumping();*/
+	
+	void CallSprintStart();
+	void CallSprintEnd();
+	void CallCrouchStart();
+	void CallCrouchEnd();
+	void CallMove(const FInputActionValue& Value);
+	void CallLook(const FInputActionValue& Value);
+	void CallJumpingStart();
+	void CallJumpingEnd();
+
 };
