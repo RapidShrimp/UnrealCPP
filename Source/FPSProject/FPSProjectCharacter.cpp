@@ -147,10 +147,11 @@ void AFPSProjectCharacter::UseWeapon()
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
-	bHasRifle = bNewHasRifle;
-	if(bHasRifle)
+	if(!bHasRifle)
 	{
+		MyWeapon = Weapon;
 	}
+	bHasRifle = bNewHasRifle;
 }
 
 bool AFPSProjectCharacter::GetHasRifle()

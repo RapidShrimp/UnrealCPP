@@ -42,10 +42,11 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> CrouchAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
+	TObjectPtr<UInputAction> FireAction;
 	
 	virtual void SetupInputComponent() override;
-
-	void Debug(const FInputActionValue& Value);
 
 protected:
 	virtual void BeginPlay() override;
@@ -60,5 +61,10 @@ protected:
 	void CallLook(const FInputActionValue& Value);
 	void CallJumpingStart();
 	void CallJumpingEnd();
+	void CallFireStart();
+
+public:
+	void AddWeaponMappings(UInputMappingContext* FireMappingContext);
+	void RemoveWeaponMappings(UInputMappingContext* FireMappingContext);
 
 };

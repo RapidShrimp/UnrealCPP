@@ -17,9 +17,6 @@ void APController::SetupInputComponent()
 		
 		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 		{
-			//Jumping
-			EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::Debug);
-
 			EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::CallJumpingStart);
 			EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &APController::CallJumpingEnd);
 		
@@ -36,18 +33,11 @@ void APController::SetupInputComponent()
 			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
 		}
 	}
-	else{UE_LOG(LogTemp,Warning,TEXT("NO Controlled Player Pawn"));}
-}
-
-void APController::Debug(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp,Warning,TEXT("DEBUG PRESS"));
 }
 
 void APController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	SetupInputComponent();
 		//Adding Mapping Context & Subsystem
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
@@ -56,45 +46,46 @@ void APController::BeginPlay()
 		}
 }
 
-
-void APController::CallSprintStart()
+void APController::AddWeaponMappings(UInputMappingContext* FireMappingContext)
 {
-	MyPlayerCharacter->SprintStart();
+	if(MyPlayerCharacter != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(FireMappingContext, 1);
+		}
+		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
+		{
+			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
+			UE_LOG(LogTemp,Warning,TEXT("Successful Binding"))
+		}
+	}
 }
 
-void APController::CallSprintEnd()
+void APController::RemoveWeaponMappings(UInputMappingContext* FireMappingContext)
 {
-	MyPlayerCharacter->SprintStop();
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
+	{
+		Subsystem->RemoveMappingContext(FireMappingContext);
+	}
+	if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		//RemoveBindings
+	}
 }
 
-void APController::CallCrouchStart()
-{
-	MyPlayerCharacter->StartCrouch();
-}
+void APController::CallMove(const FInputActionValue& Value) {MyPlayerCharacter->Move(Value);}
+void APController::CallLook(const FInputActionValue& Value) {MyPlayerCharacter->Look(Value);}
+void APController::CallSprintStart() {MyPlayerCharacter->SprintStart();}
+void APController::CallSprintEnd() {MyPlayerCharacter->SprintStop();}
+void APController::CallCrouchStart() {MyPlayerCharacter->StartCrouch();}
+void APController::CallCrouchEnd() {MyPlayerCharacter->StopCrouch();}
+void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
+void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
+void APController::CallFireStart(){MyPlayerCharacter->UseWeapon();}
 
-void APController::CallCrouchEnd()
-{
-	MyPlayerCharacter->StopCrouch();
-}
 
-void APController::CallJumpingStart()
-{
-	MyPlayerCharacter->Jump();
-}
 
-void APController::CallJumpingEnd()
-{
-	MyPlayerCharacter->StopJumping();
-}
-void APController::CallMove(const FInputActionValue& Value)
-{
-	MyPlayerCharacter->Move(Value);
-}
-
-void APController::CallLook(const FInputActionValue& Value)
-{
-	MyPlayerCharacter->Look(Value);
-}
 
 
 

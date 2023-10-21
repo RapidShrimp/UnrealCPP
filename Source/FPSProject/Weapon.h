@@ -29,7 +29,7 @@ public:
 	void AttachWeapon(AFPSProjectCharacter* TargetCharacter);
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void DropWeapon(AFPSProjectCharacter* TargetCharacter);
+	void DropWeapon();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* FireMappingContext;
@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _SphereCollider;
 	
-	TObjectPtr<AFPSProjectCharacter> Character;
+	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
 	virtual void BeginPlay() override;
 private:

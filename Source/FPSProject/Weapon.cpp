@@ -7,10 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-
 #include "FPSProjectCharacter.h"
+#include "PController.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -49,51 +47,39 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 
 void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 {
-	Character = TargetCharacter;
-	if (Character == nullptr)
+	OwningCharacter = TargetCharacter;
+	if (OwningCharacter == nullptr)
 	{
 		return;
 	}
-
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
+	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	Character->SetRifle(true,this);
-	// TODO Set up ActionMapping & Bindings
-	
-	/*if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
+	//Mapping Rules
+	OwningCharacter->SetRifle(true,this);
+	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(FireMappingContext, 1);
-		}
-	}*/
+		PlayerController->AddWeaponMappings(FireMappingContext);
+	}
+	
 }
 
-void AWeapon::DropWeapon(AFPSProjectCharacter* TargetCharacter)
+void AWeapon::DropWeapon()
 {
-	if (TargetCharacter != nullptr)
+	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Character->GetController()))
-		{
-			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-			{
-				Subsystem->RemoveMappingContext(FireMappingContext);
-			}
-				RemoveFromRoot();
-				/*	TODO Drop Weapon
-				 * - Remove Bindings
-				 * - Remove From Parent & Place on Floor (Physics)
-				 * - Enable Collider
-				 */
-		}
+		PlayerController->RemoveWeaponMappings(FireMappingContext);
+		FDetachmentTransformRules DetatchmentRules(EDetachmentRule::KeepWorld, true);
+		DetachFromActor(DetatchmentRules);
+		OwningCharacter->SetRifle(false,nullptr);
 	}
 }
 
 
 bool AWeapon::Fire_Implementation()
 {
+	DropWeapon();
 	UE_LOG(LogTemp,Display,TEXT("FIRING"))
 	return true;
 }
