@@ -11,6 +11,7 @@
 
 #include "FPSProjectCharacter.h"
 #include "PController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -21,17 +22,21 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	_Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(_Root);
+	
 	
 	_SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	_SkeletonMesh->SetupAttachment(_Root);
-	
-	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
-	_Arrow->SetupAttachment(_SkeletonMesh);
+
 	
 	_SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("PickupBox"));
 	_SphereCollider->SetupAttachment(_SkeletonMesh);
 	_SphereCollider->SetSphereRadius(45.0f);
-
+	
+	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
+	_Arrow->SetupAttachment(_SkeletonMesh);
+	
+	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 }
 
 
@@ -40,6 +45,9 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	_SphereCollider->OnComponentBeginOverlap.AddDynamic(this,&AWeapon::OnOverlap);
+	_CurrentAmmo = StartingAmmo;
+	Reload();
+	
 }
 
 void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -58,6 +66,8 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	{
 		return;
 	}
+
+
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -79,15 +89,47 @@ void AWeapon::DropWeapon()
 		FDetachmentTransformRules DetatchmentRules(EDetachmentRule::KeepWorld, true);
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
+		FHitResult Hit;
+		if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),OwningCharacter->GetActorLocation(),OwningCharacter->GetActorLocation() - FVector {0,0,1000},UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{this},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Green,FLinearColor::Red))
+		{
+			SetActorLocation(Hit.Location);
+			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
+		}
+
+		
+		OwningCharacter = nullptr;
 	}
+}
+
+bool AWeapon::AddAmmo(int InAmmo)
+{
+	return true;
+}
+
+bool AWeapon::Reload()
+{
+	int AmmoToAdd = _MaxClipSize - _CurrentClip;
+	AmmoToAdd = FMath::Min(_CurrentAmmo,AmmoToAdd);
+	_CurrentClip += AmmoToAdd;
+	_CurrentAmmo -= AmmoToAdd;
+	return false;
 }
 
 
 bool AWeapon::Fire_Implementation()
 {
-	PlayFireAudio();
-	DropWeapon();
-	UE_LOG(LogTemp,Display,TEXT("FIRING"))
+	UE_LOG(LogTemp, Warning, TEXT("Current Clip: %d / %d, Current Ammo %d"), _CurrentClip,_MaxClipSize,_CurrentAmmo);
+	if(_CurrentClip > 0)
+	{
+		PlayFireAudio();
+		_CurrentClip-=1;
+
+		// Do Shooting Functionality
+	}
+	else
+	{
+		//Reload();
+	}
 	return true;
 }
 

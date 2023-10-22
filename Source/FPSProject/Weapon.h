@@ -37,6 +37,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
 	TObjectPtr<USoundBase> FireSound;
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
+	int _MaxAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
+	int _MaxClipSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
+	int StartingAmmo;
+	
+	UFUNCTION(BlueprintCallable)
+	bool AddAmmo(int InAmmo);
+	
+	UFUNCTION(BlueprintCallable)
+	bool Reload();
 	
 protected:
 	
@@ -54,6 +71,10 @@ protected:
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
+
+	int _CurrentAmmo;
+	int _CurrentClip;
+	
 	void PlayFireAudio();
 	
 	virtual void BeginPlay() override;
