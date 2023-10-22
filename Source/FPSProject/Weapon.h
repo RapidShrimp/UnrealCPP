@@ -11,6 +11,7 @@
 class USkeletalMeshComponent;
 class UArrowComponent;
 class USphereComponent;
+class USoundBase;
 class AFPSProjectCharacter;
 
 UCLASS(Abstract)
@@ -32,7 +33,10 @@ public:
 	void DropWeapon();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputMappingContext* FireMappingContext;
+	UInputMappingContext* FireMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
+	TObjectPtr<USoundBase> FireSound;
 	
 protected:
 	
@@ -50,8 +54,11 @@ protected:
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
+	void PlayFireAudio();
+	
 	virtual void BeginPlay() override;
 private:
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 };

@@ -1,13 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "FPSProjectCharacter.h"
-#include "FPSProjectProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "AI/NavigationSystemBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -44,44 +40,7 @@ void AFPSProjectCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-
-	/*//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}*/
 }
-
-//////////////////////////////////////////////////////////////////////////// Input
-
-/*void AFPSProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
-{
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Move);
-		
-		EnhancedInputComponent->BindAction(SprintAction,ETriggerEvent::Triggered, this , &AFPSProjectCharacter::SprintStart);
-		EnhancedInputComponent->BindAction(SprintAction,ETriggerEvent::Completed, this , &AFPSProjectCharacter::SprintStop);
-
-		EnhancedInputComponent->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&AFPSProjectCharacter::StartCrouch);
-		EnhancedInputComponent->BindAction(CrouchAction,ETriggerEvent::Completed,this,&AFPSProjectCharacter::StopCrouch);
-
-		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFPSProjectCharacter::Look);
-
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this , &AFPSProjectCharacter::UseWeapon);
-	}
-}*/
-
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)
 {

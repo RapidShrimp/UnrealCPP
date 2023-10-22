@@ -6,8 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PController.generated.h"
 
-class AFPSProjectCharacter;
 struct FInputActionValue;
+class AFPSProjectCharacter;
 class UInputAction;
 class UInputMappingContext;
 
@@ -53,6 +53,8 @@ protected:
 
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
 	
+	TObjectPtr<UInputMappingContext> FireMappingContext;
+	
 	void CallSprintStart();
 	void CallSprintEnd();
 	void CallCrouchStart();
@@ -64,7 +66,7 @@ protected:
 	void CallFireStart();
 
 public:
-	void AddWeaponMappings(UInputMappingContext* FireMappingContext);
-	void RemoveWeaponMappings(UInputMappingContext* FireMappingContext);
+	void AddWeaponMappings(UInputMappingContext* InFireMappingContext);
+	void RemoveWeaponMappings();
 
 };

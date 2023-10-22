@@ -7,8 +7,12 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 
+#include "AssetTypeActions/AssetDefinition_SoundBase.h"
+
 #include "FPSProjectCharacter.h"
 #include "PController.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AWeapon::AWeapon()
@@ -29,6 +33,8 @@ AWeapon::AWeapon()
 	_SphereCollider->SetSphereRadius(45.0f);
 
 }
+
+
 
 void AWeapon::BeginPlay()
 {
@@ -69,7 +75,7 @@ void AWeapon::DropWeapon()
 {
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		PlayerController->RemoveWeaponMappings(FireMappingContext);
+		PlayerController->RemoveWeaponMappings(); 
 		FDetachmentTransformRules DetatchmentRules(EDetachmentRule::KeepWorld, true);
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
@@ -79,7 +85,18 @@ void AWeapon::DropWeapon()
 
 bool AWeapon::Fire_Implementation()
 {
+	PlayFireAudio();
 	DropWeapon();
 	UE_LOG(LogTemp,Display,TEXT("FIRING"))
 	return true;
 }
+
+void AWeapon::PlayFireAudio()
+{
+	if(FireSound!=nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, this->GetActorLocation());
+	}
+}
+
+

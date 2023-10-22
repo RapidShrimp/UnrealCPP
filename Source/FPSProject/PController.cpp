@@ -46,13 +46,14 @@ void APController::BeginPlay()
 		}
 }
 
-void APController::AddWeaponMappings(UInputMappingContext* FireMappingContext)
+void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext)
 {
 	if(MyPlayerCharacter != nullptr)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(FireMappingContext, 1);
+			Subsystem->AddMappingContext(InFireMappingContext, 1);
+			FireMappingContext = InFireMappingContext;
 		}
 		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 		{
@@ -62,15 +63,15 @@ void APController::AddWeaponMappings(UInputMappingContext* FireMappingContext)
 	}
 }
 
-void APController::RemoveWeaponMappings(UInputMappingContext* FireMappingContext)
+void APController::RemoveWeaponMappings()
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
 	{
 		Subsystem->RemoveMappingContext(FireMappingContext);
+		FireMappingContext = nullptr;
 	}
 	if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		//RemoveBindings
 	}
 }
 
