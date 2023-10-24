@@ -37,9 +37,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
 	TObjectPtr<USoundBase> FireSound;
-
-
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
 	int _MaxAmmo;
 

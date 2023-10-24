@@ -49,6 +49,9 @@ public:
 protected:
 
 	TObjectPtr<AWeapon> MyWeapon = nullptr;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float _DashForce;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
@@ -62,6 +65,7 @@ public:
 	void StartCrouch();
 	void StopCrouch();
 	void UseWeapon();
+	void Dash();
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
 	float DefaultFieldOfView = 90;

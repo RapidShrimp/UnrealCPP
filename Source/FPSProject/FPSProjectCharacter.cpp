@@ -104,6 +104,10 @@ void AFPSProjectCharacter::UseWeapon()
 	}
 }
 
+void AFPSProjectCharacter::Dash()
+{
+}
+
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
 	if(!bHasRifle)

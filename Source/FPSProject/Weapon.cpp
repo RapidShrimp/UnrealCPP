@@ -3,13 +3,13 @@
 
 #include "Weapon.h"
 
-#include "Components/ArrowComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "FPSProjectCharacter.h"
+#include "Components/ArrowComponent.h"
 
 #include "AssetTypeActions/AssetDefinition_SoundBase.h"
 
-#include "FPSProjectCharacter.h"
 #include "PController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -103,6 +103,7 @@ void AWeapon::DropWeapon()
 
 bool AWeapon::AddAmmo(int InAmmo)
 {
+	_CurrentAmmo += InAmmo;
 	return true;
 }
 
@@ -123,14 +124,14 @@ bool AWeapon::Fire_Implementation()
 	{
 		PlayFireAudio();
 		_CurrentClip-=1;
-
 		// Do Shooting Functionality
+		return  true;
 	}
 	else
 	{
-		//Reload();
+		//Reload Prompt;
 	}
-	return true;
+	return false;
 }
 
 void AWeapon::PlayFireAudio()

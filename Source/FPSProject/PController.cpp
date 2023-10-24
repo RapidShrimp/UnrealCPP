@@ -29,6 +29,8 @@ void APController::SetupInputComponent()
 			EIP->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&APController::CallCrouchStart);
 			EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::CallCrouchEnd);
 
+			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
+
 			//Looking
 			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
 		}
@@ -84,6 +86,8 @@ void APController::CallCrouchEnd() {MyPlayerCharacter->StopCrouch();}
 void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
 void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
 void APController::CallFireStart(){MyPlayerCharacter->UseWeapon();}
+
+void APController::CallDash() {MyPlayerCharacter->Dash();}
 
 
 
