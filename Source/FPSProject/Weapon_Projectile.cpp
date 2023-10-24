@@ -13,11 +13,6 @@ AWeapon_Projectile::AWeapon_Projectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//TODO - Dynamic Material JAY
-	/*if(_DynamicMaterial)
-		_DynamicMaterial->SetVectorParameterValue("BodyColor",_WeaponColour);
-*/
 }
 
 bool AWeapon_Projectile::Fire_Implementation()

@@ -35,13 +35,17 @@ AWeapon::AWeapon()
 	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 
-	//TODO - Weapon Material Inst JAY
-	/*if(_WeaponMaterial != nullptr)
+	//TODO - Weapon Material Inst JAY -- Works In Begin Play
+	TObjectPtr<UMaterialInterface> _WeaponMaterial;
+	_WeaponMaterial = _SkeletonMesh->GetMaterial(0);
+	UE_LOG(LogTemp,Warning,TEXT("Material, NAMEL: %hd"),_WeaponMaterial.IsNull());
+	if(_WeaponMaterial != nullptr)
 	{
-		_DynamicMaterial =  CreateDefaultSubobject<UMaterialInstanceDynamic>(TEXT("mat"));
-		_DynamicMaterial = UMaterialInstanceDynamic::Create(_WeaponMaterial,this);
-	}*/
-
+		UE_LOG(LogTemp,Display,TEXT("Material Exists"));
+		TObjectPtr<UMaterialInstanceDynamic> _DynamicMaterial = UMaterialInstanceDynamic::Create(_WeaponMaterial,this);
+		_DynamicMaterial->SetVectorParameterValue(FName("BodyColor"),_WeaponColour);
+		_SkeletonMesh->SetMaterial(0,_DynamicMaterial);
+	}
 }
 
 
@@ -124,12 +128,11 @@ bool AWeapon::Reload_Implementation()
 
 bool AWeapon::Fire_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Current Clip: %d / %d, Current Ammo %d"), _CurrentClip,_MaxClipSize,_CurrentAmmo);
 	if(_CurrentClip > 0)
 	{
 		PlayFireAudio();
 		_CurrentClip-=1;
-		// Do Shooting Functionality
+		UE_LOG(LogTemp, Warning, TEXT("Current Clip: %d / %d, Current Ammo %d"), _CurrentClip,_MaxClipSize,_CurrentAmmo);
 		return  true;
 	}
 	else
