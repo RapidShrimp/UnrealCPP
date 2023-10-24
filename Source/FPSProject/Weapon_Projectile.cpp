@@ -13,21 +13,28 @@ AWeapon_Projectile::AWeapon_Projectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	//TODO - Dynamic Material JAY
+	/*if(_DynamicMaterial)
+		_DynamicMaterial->SetVectorParameterValue("BodyColor",_WeaponColour);
+*/
 }
 
 bool AWeapon_Projectile::Fire_Implementation()
 {
+	//Spawn Params
 	UWorld* const World = GetWorld();
 	if(World == nullptr || !_Projectile) {return false;}
 	FActorSpawnParameters spawnParams;
 	spawnParams.Owner = GetOwner();
 	spawnParams.Instigator = GetInstigator();
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+	/*Check if there is enough ammo and then spawn projectile*/
+	if(!Super::Fire_Implementation()) {return false;}
 	const FTransform TForm = {OwningCharacter->GetFirstPersonCameraComponent()->GetComponentRotation(),_Arrow->GetComponentLocation()};
 	World->SpawnActor(_Projectile,&TForm,spawnParams);
-	UE_LOG(LogTemp,Warning,TEXT("FIRED PROJECTILE"))
-	return Super::Fire_Implementation();
-	
+	return true;
 }
 
 // Called when the game starts or when spawned

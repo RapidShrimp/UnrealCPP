@@ -57,15 +57,22 @@ protected:
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
 
 public:
-	
+
+	//Movement Functions
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void SprintStart();
 	void SprintStop();
 	void StartCrouch();
 	void StopCrouch();
-	void UseWeapon();
 	void Dash();
+
+	//Interact Functions
+	void Interact();
+
+	//Interface Weapon Calls
+	void UseWeapon();
+	void ReloadWeapon();
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
 	float DefaultFieldOfView = 90;

@@ -24,4 +24,6 @@ class FPSPROJECT_API IFireable
 public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	bool Fire();
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	bool Reload();
 };

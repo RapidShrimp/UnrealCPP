@@ -104,8 +104,21 @@ void AFPSProjectCharacter::UseWeapon()
 	}
 }
 
+void AFPSProjectCharacter::ReloadWeapon()
+{
+	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
+	{
+		IFireable::Execute_Reload(MyWeapon);
+	}
+}
+
 void AFPSProjectCharacter::Dash()
 {
+}
+
+void AFPSProjectCharacter::Interact()
+{
+	
 }
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)

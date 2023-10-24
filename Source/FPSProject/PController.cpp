@@ -60,6 +60,7 @@ void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext)
 		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 		{
 			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
+			EIP->BindAction(ReloadAction,ETriggerEvent::Triggered,this,&APController::CallReload);
 			UE_LOG(LogTemp,Warning,TEXT("Successful Binding"))
 		}
 	}
@@ -85,9 +86,14 @@ void APController::CallCrouchStart() {MyPlayerCharacter->StartCrouch();}
 void APController::CallCrouchEnd() {MyPlayerCharacter->StopCrouch();}
 void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
 void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
-void APController::CallFireStart(){MyPlayerCharacter->UseWeapon();}
-
 void APController::CallDash() {MyPlayerCharacter->Dash();}
+
+void APController::CallInteract() {MyPlayerCharacter->Interact();}
+
+
+void APController::CallFireStart() {MyPlayerCharacter->UseWeapon();}
+void APController::CallReload() {MyPlayerCharacter->ReloadWeapon();}
+
 
 
 

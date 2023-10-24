@@ -19,6 +19,9 @@ public:
 
 	virtual bool Fire_Implementation() override;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FColor _WeaponColour = {0,0,0,0};
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TSubclassOf<AFPSProjectProjectile> _Projectile;
 protected:
 	// Called when the game starts or when spawned

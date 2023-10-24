@@ -22,9 +22,14 @@ class FPSPROJECT_API AWeapon : public AActor , public  IFireable
 public:
 	// Sets default values for this actor's properties
 	AWeapon();
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMaterialInterface> _WeaponMaterial;
+	
 	
 	virtual  bool Fire_Implementation() override;
-
+	virtual  bool Reload_Implementation() override;
+	
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachWeapon(AFPSProjectCharacter* TargetCharacter);
@@ -39,19 +44,17 @@ public:
 	TObjectPtr<USoundBase> FireSound;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int _MaxAmmo;
+	int _MaxAmmo = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int _MaxClipSize;
+	int _MaxClipSize = 12;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int StartingAmmo;
+	int StartingAmmo = 50;
 	
 	UFUNCTION(BlueprintCallable)
 	bool AddAmmo(int InAmmo);
-	
-	UFUNCTION(BlueprintCallable)
-	bool Reload();
+
 	
 protected:
 	
@@ -69,7 +72,8 @@ protected:
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
-
+	TObjectPtr<UMaterialInstanceDynamic> _DynamicMaterial;
+	
 	int _CurrentAmmo;
 	int _CurrentClip;
 	

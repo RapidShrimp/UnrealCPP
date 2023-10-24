@@ -8,10 +8,7 @@
 #include "FPSProjectCharacter.h"
 #include "Components/ArrowComponent.h"
 
-#include "AssetTypeActions/AssetDefinition_SoundBase.h"
-
 #include "PController.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -37,6 +34,14 @@ AWeapon::AWeapon()
 	_Arrow->SetupAttachment(_SkeletonMesh);
 	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
+
+	//TODO - Weapon Material Inst JAY
+	/*if(_WeaponMaterial != nullptr)
+	{
+		_DynamicMaterial =  CreateDefaultSubobject<UMaterialInstanceDynamic>(TEXT("mat"));
+		_DynamicMaterial = UMaterialInstanceDynamic::Create(_WeaponMaterial,this);
+	}*/
+
 }
 
 
@@ -46,7 +51,7 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	_SphereCollider->OnComponentBeginOverlap.AddDynamic(this,&AWeapon::OnOverlap);
 	_CurrentAmmo = StartingAmmo;
-	Reload();
+	Reload_Implementation();
 	
 }
 
@@ -107,7 +112,7 @@ bool AWeapon::AddAmmo(int InAmmo)
 	return true;
 }
 
-bool AWeapon::Reload()
+bool AWeapon::Reload_Implementation()
 {
 	int AmmoToAdd = _MaxClipSize - _CurrentClip;
 	AmmoToAdd = FMath::Min(_CurrentAmmo,AmmoToAdd);

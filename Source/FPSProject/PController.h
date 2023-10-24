@@ -48,6 +48,9 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> FireAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
+	TObjectPtr<UInputAction> ReloadAction;
 	
 	virtual void SetupInputComponent() override;
 
@@ -66,8 +69,11 @@ protected:
 	void CallLook(const FInputActionValue& Value);
 	void CallJumpingStart();
 	void CallJumpingEnd();
-	void CallFireStart();
 	void CallDash();
+	void CallInteract();
+	
+	void CallFireStart();
+	void CallReload();
 
 public:
 	void AddWeaponMappings(UInputMappingContext* InFireMappingContext);
