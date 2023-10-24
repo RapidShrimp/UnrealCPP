@@ -20,15 +20,14 @@ AWeapon_Hitscan::AWeapon_Hitscan()
 bool AWeapon_Hitscan::Fire_Implementation()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Fire"));
-	FVector StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _Range;
+	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _Range;
 	FHitResult Hit;
 	if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),
 	true,{this, GetOwner()},EDrawDebugTrace::Persistent,
 	Hit,true,FLinearColor::Red,FLinearColor::Green, 5.0f))
 {
-
 	UGameplayStatics::ApplyDamage(Hit.GetActor(),_Damage,OwningCharacter->GetController(),this,UDamageType::StaticClass());
 		return  true;
 }
