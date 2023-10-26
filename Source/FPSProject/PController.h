@@ -4,12 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "WidgetHUD.h"
+
 #include "PController.generated.h"
 
-struct FInputActionValue;
 class AFPSProjectCharacter;
+
+struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
+
+class UWidgetHUD;
 
 /**
  * 
@@ -20,6 +25,7 @@ class FPSPROJECT_API APController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -55,11 +61,16 @@ public:
 	virtual void SetupInputComponent() override;
 
 protected:
+	
 	virtual void BeginPlay() override;
 
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
 	
 	TObjectPtr<UInputMappingContext> FireMappingContext;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UWidgetHUD> _HUDWidgetClass;
+	TObjectPtr<UWidgetHUD> _HUDWidget;
 	
 	void CallSprintStart();
 	void CallSprintEnd();
@@ -74,6 +85,9 @@ protected:
 	
 	void CallFireStart();
 	void CallReload();
+
+	UFUNCTION()
+	void HandleHealthUpdate(float newHealth,float maxHealth,float healthChange);
 
 public:
 	void AddWeaponMappings(UInputMappingContext* InFireMappingContext);

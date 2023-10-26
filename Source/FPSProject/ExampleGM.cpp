@@ -31,6 +31,10 @@ void AExampleGM::Handle_GameRuleCompleted()
 
 void AExampleGM::Handle_GameRulePointsScored(AController* scorer, int points)
 {
+	if(scorer)
+	{
+		
+	}
 }
 
 void AExampleGM::HandleMatchIsWaitingToStart()
@@ -77,7 +81,6 @@ void AExampleGM::BeginPlay()
 			rule->Init();
 			rule->OnGameRuleComplete.AddUniqueDynamic(this, &AExampleGM::Handle_GameRuleCompleted);
 			rule->OnGameRulePointsScored.AddUniqueDynamic(this, &AExampleGM::Handle_GameRulePointsScored);
-
 		}
 	}
 }

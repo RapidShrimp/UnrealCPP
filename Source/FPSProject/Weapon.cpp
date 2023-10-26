@@ -35,17 +35,7 @@ AWeapon::AWeapon()
 	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 
-	//TODO - Weapon Material Inst JAY -- Works In Begin Play
-	TObjectPtr<UMaterialInterface> _WeaponMaterial;
-	_WeaponMaterial = _SkeletonMesh->GetMaterial(0);
-	UE_LOG(LogTemp,Warning,TEXT("Material, NAMEL: %hd"),_WeaponMaterial.IsNull());
-	if(_WeaponMaterial != nullptr)
-	{
-		UE_LOG(LogTemp,Display,TEXT("Material Exists"));
-		TObjectPtr<UMaterialInstanceDynamic> _DynamicMaterial = UMaterialInstanceDynamic::Create(_WeaponMaterial,this);
-		_DynamicMaterial->SetVectorParameterValue(FName("BodyColor"),_WeaponColour);
-		_SkeletonMesh->SetMaterial(0,_DynamicMaterial);
-	}
+
 }
 
 
@@ -56,7 +46,6 @@ void AWeapon::BeginPlay()
 	_SphereCollider->OnComponentBeginOverlap.AddDynamic(this,&AWeapon::OnOverlap);
 	_CurrentAmmo = StartingAmmo;
 	Reload_Implementation();
-	
 }
 
 void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

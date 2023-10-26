@@ -23,10 +23,6 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FColor _WeaponColour = {0,0,0,0};
-
-	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
 	

@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include "FPSProjectCharacter.generated.h"
 
+class UHealthComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
@@ -21,13 +22,14 @@ class AFPSProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHealthComponent> _HealthComponent;
 
-	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
+	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
 	
 public:
 	AFPSProjectCharacter();
@@ -52,6 +54,7 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float _DashForce;
+
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);

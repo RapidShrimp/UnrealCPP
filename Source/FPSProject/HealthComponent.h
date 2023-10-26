@@ -21,6 +21,7 @@ public:
 	FHealthComponentDamagedSignature OnHealthComponentDamaged;
 	UPROPERTY(BlueprintAssignable)
 	FHealthComponentDeadSignature OnHealthComponentDead;
+
 protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float _MaxHealth;
@@ -28,6 +29,7 @@ protected:
 	float _CurrentHealth;
 	virtual  void BeginPlay() override;
 
+	
 private:
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
