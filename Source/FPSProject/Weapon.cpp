@@ -34,8 +34,6 @@ AWeapon::AWeapon()
 	_Arrow->SetupAttachment(_SkeletonMesh);
 	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
-
-
 }
 
 

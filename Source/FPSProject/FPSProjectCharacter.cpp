@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -116,13 +117,60 @@ void AFPSProjectCharacter::ReloadWeapon()
 	}
 }
 
-void AFPSProjectCharacter::Dash()
+
+void AFPSProjectCharacter::AddInteractable(AActor* InterfacedActor)
 {
+	IInteract* Interfaced = Cast<IInteract>(InterfacedActor);
+	if(UKismetSystemLibrary::DoesImplementInterface(InterfacedActor,UInteract::StaticClass()) && Interfaced->GetCanInteract())
+	{
+		//Add Interfacted Actor to Interface
+	}
+}
+
+void AFPSProjectCharacter::RemoveInteractable(AActor* InterfacedActor)
+{
+	//If actor is in there remove it from InteractableList;
+}
+
+AActor* AFPSProjectCharacter::GetDesiredInteract()
+{
+	FVector StartLoc = GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector EndLoc = StartLoc + GetFirstPersonCameraComponent()->GetForwardVector() * 100.0f;
+	FHitResult Hit;
+	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
+		{},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Blue,FLinearColor::Green);
+
+	float PreviousDistance = 0;
+	AActor* DesiredInteractalbe = nullptr;
+	/*for(AActor* InteractableList : Arr)
+	{
+		if(InteractableList[Arr].distance < PreviousDistance)
+		{
+			DesiredInteractalbe = InteractableList[Arr];
+		} 
+	}*/
+	return DesiredInteractalbe;
 }
 
 void AFPSProjectCharacter::Interact()
 {
-	
+	if(InteractableList.Num() == 1)
+	{
+		IInteract::Execute_Interact(InteractableList[0]);
+	}
+	else if(InteractableList.Num() >= 2)
+	{
+		AActor* Desired = GetDesiredInteract();
+		if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
+		{
+			IInteract::Execute_Interact(Desired);
+		}
+	}
+}
+
+void AFPSProjectCharacter::Dash()
+{
 }
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)

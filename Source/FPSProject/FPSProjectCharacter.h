@@ -52,6 +52,8 @@ protected:
 
 	TObjectPtr<AWeapon> MyWeapon = nullptr;
 
+
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float _DashForce;
 
@@ -71,6 +73,10 @@ public:
 	void Dash();
 
 	//Interact Functions
+	TArray<TObjectPtr<AActor>> InteractableList;
+	void AddInteractable(AActor* InterfacedActor);
+	void RemoveInteractable(AActor* InterfacedActor);
+	AActor* GetDesiredInteract();
 	void Interact();
 
 	//Interface Weapon Calls

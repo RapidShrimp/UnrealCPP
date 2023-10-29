@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IInteract.h"
 #include "UObject/Interface.h"
 #include "Fireable.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE()
-class UFireable : public UInterface
+class UFireable : public UInteract
 {
 	GENERATED_BODY()
 };

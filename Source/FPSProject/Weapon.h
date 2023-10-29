@@ -51,7 +51,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool AddAmmo(int InAmmo);
 
-	
 protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
