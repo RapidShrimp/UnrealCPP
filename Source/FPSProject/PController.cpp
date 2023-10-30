@@ -25,6 +25,7 @@ void APController::SetupInputComponent()
 			EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::CallCrouchEnd);
 			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
 			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
+			EIP->BindAction(InteractAction,ETriggerEvent::Started,this,&APController::CallInteract);
 		}
 
 	}
@@ -84,6 +85,7 @@ void APController::RemoveWeaponMappings()
 	}
 	if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
+		//Remove Reload & Fire Bindings
 	}
 }
 

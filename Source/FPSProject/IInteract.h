@@ -25,8 +25,8 @@ public:
 	bool bCanInteract = false;
 	
 	bool GetCanInteract(){return bCanInteract;}
-	void SetCanInteract(bool Interactibility){bCanInteract = Interactibility;}
+	void SetCanInteract(bool Interactibility) {bCanInteract = Interactibility;}
 	
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	void Interact();
+	void Interact(AActor* Interacting);
 };

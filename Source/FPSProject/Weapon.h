@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Fireable.h"
+#include "IInteract.h"
 #include "GameFramework/Actor.h"
 #include "InputAction.h"
 #include "Weapon.generated.h"
@@ -15,7 +16,7 @@ class USoundBase;
 class AFPSProjectCharacter;
 
 UCLASS(Abstract)
-class FPSPROJECT_API AWeapon : public AActor , public  IFireable
+class FPSPROJECT_API AWeapon : public AActor , public  IFireable, public IInteract
 {
 	GENERATED_BODY()
 
@@ -25,6 +26,7 @@ public:
 	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
+	virtual void Interact_Implementation(AActor* Interacting) override;
 	
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
@@ -76,6 +78,10 @@ protected:
 	virtual void BeginPlay() override;
 private:
 	UFUNCTION()
-	virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	
 };

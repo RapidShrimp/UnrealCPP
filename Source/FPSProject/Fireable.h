@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IInteract.h"
 #include "UObject/Interface.h"
 #include "Fireable.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE()
-class UFireable : public UInteract
+class UFireable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -27,4 +26,5 @@ public:
 	bool Fire();
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	bool Reload();
+
 };

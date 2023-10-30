@@ -34,6 +34,7 @@ AWeapon::AWeapon()
 	_Arrow->SetupAttachment(_SkeletonMesh);
 	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
+	_SphereCollider->SetSphereRadius(100.0f);
 }
 
 
@@ -41,18 +42,37 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	_SphereCollider->OnComponentBeginOverlap.AddDynamic(this,&AWeapon::OnOverlap);
+	_SphereCollider->OnComponentBeginOverlap.AddUniqueDynamic(this,&AWeapon::OnBeginOverlap);
+	_SphereCollider->OnComponentEndOverlap.AddUniqueDynamic(this,&AWeapon::OnEndOverlap);
 	_CurrentAmmo = StartingAmmo;
+	SetCanInteract(true);
 	Reload_Implementation();
 }
 
-void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
 	{
 		if(!PlayerCharacter->GetHasRifle())
 			AttachWeapon(PlayerCharacter);
+		else if(PlayerCharacter->GetHasRifle())
+		{
+			PlayerCharacter->AddInteractable(this);
+			UE_LOG(LogTemp,Warning,TEXT("Added"));
+
+		}
 	} 
+}
+
+void AWeapon::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
+	{
+		PlayerCharacter->RemoveInteractable(this);
+		UE_LOG(LogTemp,Warning,TEXT("Removed"));
+
+	}
 }
 
 void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
@@ -79,6 +99,13 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 
 void AWeapon::DropWeapon()
 {
+	if(OwningCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO CHARACTER OWNER"));
+
+		return;
+	}
+	
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
 		PlayerController->RemoveWeaponMappings(); 
@@ -92,7 +119,6 @@ void AWeapon::DropWeapon()
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
 		}
 
-		
 		OwningCharacter = nullptr;
 	}
 }
@@ -110,6 +136,16 @@ bool AWeapon::Reload_Implementation()
 	_CurrentClip += AmmoToAdd;
 	_CurrentAmmo -= AmmoToAdd;
 	return false;
+}
+
+void AWeapon::Interact_Implementation(AActor* Interacting)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Did Something"));
+
+	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
+	{
+		AttachWeapon(Player);
+	}
 }
 
 

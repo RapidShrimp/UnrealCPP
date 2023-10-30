@@ -51,6 +51,9 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> DashAction;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
+	TObjectPtr<UInputAction> InteractAction;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> FireAction;
@@ -67,6 +70,7 @@ protected:
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
 	
 	TObjectPtr<UInputMappingContext> FireMappingContext;
+	
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWidgetHUD> _HUDWidgetClass;

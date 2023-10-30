@@ -123,49 +123,50 @@ void AFPSProjectCharacter::AddInteractable(AActor* InterfacedActor)
 	IInteract* Interfaced = Cast<IInteract>(InterfacedActor);
 	if(UKismetSystemLibrary::DoesImplementInterface(InterfacedActor,UInteract::StaticClass()) && Interfaced->GetCanInteract())
 	{
-		//Add Interfacted Actor to Interface
+		InteractableList.AddUnique(InterfacedActor);
 	}
 }
 
 void AFPSProjectCharacter::RemoveInteractable(AActor* InterfacedActor)
 {
-	//If actor is in there remove it from InteractableList;
+	if(InteractableList.Find(InterfacedActor))
+	{
+		InteractableList.Remove(InterfacedActor);
+	}
 }
 
 AActor* AFPSProjectCharacter::GetDesiredInteract()
 {
 	FVector StartLoc = GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector EndLoc = StartLoc + GetFirstPersonCameraComponent()->GetForwardVector() * 100.0f;
+	FVector EndLoc = StartLoc + GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
 	FHitResult Hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
 		{},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Blue,FLinearColor::Green);
 
-	float PreviousDistance = 0;
+	float PreviousDistance = 1000;
 	AActor* DesiredInteractalbe = nullptr;
-	/*for(AActor* InteractableList : Arr)
+	for(int i = 0; i < InteractableList.Num(); i++)
 	{
-		if(InteractableList[Arr].distance < PreviousDistance)
+		if(FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation())<PreviousDistance) //Get the distance from hit location to the 
 		{
-			DesiredInteractalbe = InteractableList[Arr];
+			DesiredInteractalbe = InteractableList[i];
 		} 
-	}*/
+	}
 	return DesiredInteractalbe;
 }
 
 void AFPSProjectCharacter::Interact()
 {
-	if(InteractableList.Num() == 1)
+	AActor* Desired = GetDesiredInteract();
+	if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
 	{
-		IInteract::Execute_Interact(InteractableList[0]);
-	}
-	else if(InteractableList.Num() >= 2)
-	{
-		AActor* Desired = GetDesiredInteract();
-		if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
+		UE_LOG(LogTemp,Warning,TEXT("Here"))
+		if(GetHasRifle() && UKismetSystemLibrary::DoesImplementInterface(Desired, UFireable::StaticClass()))
 		{
-			IInteract::Execute_Interact(Desired);
+			MyWeapon->DropWeapon();
 		}
+		IInteract::Execute_Interact(Desired,this);
 	}
 }
 

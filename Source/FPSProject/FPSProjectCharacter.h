@@ -50,13 +50,10 @@ public:
 
 protected:
 
-	TObjectPtr<AWeapon> MyWeapon = nullptr;
-
-
+	TObjectPtr<AWeapon> MyWeapon;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float _DashForce;
-
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
@@ -73,7 +70,7 @@ public:
 	void Dash();
 
 	//Interact Functions
-	TArray<TObjectPtr<AActor>> InteractableList;
+	TArray<AActor*> InteractableList;
 	void AddInteractable(AActor* InterfacedActor);
 	void RemoveInteractable(AActor* InterfacedActor);
 	AActor* GetDesiredInteract();
