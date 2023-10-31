@@ -19,11 +19,12 @@ class IInteract
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	FString InteractPromptText = "";
 	FLinearColor InteractPromptColour = {0,0,0,1};
 	bool bCanInteract = false;
-	
+
+public:
 	bool GetCanInteract(){return bCanInteract;}
 	void SetCanInteract(bool Interactibility) {bCanInteract = Interactibility;}
 	

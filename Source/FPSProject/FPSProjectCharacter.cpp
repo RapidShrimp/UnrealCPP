@@ -161,7 +161,6 @@ void AFPSProjectCharacter::Interact()
 	AActor* Desired = GetDesiredInteract();
 	if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Here"))
 		if(GetHasRifle() && UKismetSystemLibrary::DoesImplementInterface(Desired, UFireable::StaticClass()))
 		{
 			MyWeapon->DropWeapon();

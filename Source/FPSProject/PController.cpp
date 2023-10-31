@@ -26,6 +26,9 @@ void APController::SetupInputComponent()
 			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
 			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
 			EIP->BindAction(InteractAction,ETriggerEvent::Started,this,&APController::CallInteract);
+			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
+			EIP->BindAction(ReloadAction,ETriggerEvent::Triggered,this,&APController::CallReload);
+			
 		}
 
 	}
@@ -66,11 +69,6 @@ void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext)
 		{
 			Subsystem->AddMappingContext(InFireMappingContext, 1);
 			FireMappingContext = InFireMappingContext;
-		}
-		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
-		{
-			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
-			EIP->BindAction(ReloadAction,ETriggerEvent::Triggered,this,&APController::CallReload);
 			UE_LOG(LogTemp,Warning,TEXT("Successful Binding"))
 		}
 	}
@@ -82,10 +80,6 @@ void APController::RemoveWeaponMappings()
 	{
 		Subsystem->RemoveMappingContext(FireMappingContext);
 		FireMappingContext = nullptr;
-	}
-	if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
-	{
-		//Remove Reload & Fire Bindings
 	}
 }
 

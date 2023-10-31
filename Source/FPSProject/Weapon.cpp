@@ -92,6 +92,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	OwningCharacter->SetRifle(true,this);
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
+		OwningCharacter->RemoveInteractable(this);
 		PlayerController->AddWeaponMappings(FireMappingContext);
 	}
 	
@@ -101,8 +102,6 @@ void AWeapon::DropWeapon()
 {
 	if(OwningCharacter == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NO CHARACTER OWNER"));
-
 		return;
 	}
 	
@@ -118,7 +117,7 @@ void AWeapon::DropWeapon()
 			SetActorLocation(Hit.Location);
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
 		}
-
+		OwningCharacter->AddInteractable(this);
 		OwningCharacter = nullptr;
 	}
 }
@@ -140,7 +139,6 @@ bool AWeapon::Reload_Implementation()
 
 void AWeapon::Interact_Implementation(AActor* Interacting)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Did Something"));
 
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
 	{
