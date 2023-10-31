@@ -25,6 +25,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;
 	
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ScoreText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CurrentClip;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> MaxClip;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CurrentAmmo;
+	
 };

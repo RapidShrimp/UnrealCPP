@@ -43,7 +43,6 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 
 void AFPSProjectCharacter::BeginPlay()
 {
-	// Call the base class  
 	Super::BeginPlay();
 }
 
@@ -141,8 +140,8 @@ AActor* AFPSProjectCharacter::GetDesiredInteract()
 	FVector EndLoc = StartLoc + GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
 	FHitResult Hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
-		UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
-		{},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Blue,FLinearColor::Green);
+	UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
+	{},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Blue,FLinearColor::Green);
 
 	float PreviousDistance = 1000;
 	AActor* DesiredInteractalbe = nullptr;
@@ -150,6 +149,7 @@ AActor* AFPSProjectCharacter::GetDesiredInteract()
 	{
 		if(FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation())<PreviousDistance) //Get the distance from hit location to the 
 		{
+			PreviousDistance = FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation());
 			DesiredInteractalbe = InteractableList[i];
 		} 
 	}
