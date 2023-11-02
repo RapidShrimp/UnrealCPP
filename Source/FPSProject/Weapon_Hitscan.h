@@ -15,12 +15,7 @@ class FPSPROJECT_API AWeapon_Hitscan : public AWeapon
 public:
 	// Sets default values for this actor's properties
 	AWeapon_Hitscan();
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float _Damage;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float _Range;
-
+	float _Range = 1.0f;
+	virtual void Init() override;
 	virtual bool Fire_Implementation() override;
 };

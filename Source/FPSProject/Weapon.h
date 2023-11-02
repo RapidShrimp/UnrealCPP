@@ -6,6 +6,8 @@
 #include "Fireable.h"
 #include "IInteract.h"
 #include "GameFramework/Actor.h"
+#include "WeaponType.h"
+
 #include "InputAction.h"
 #include "Weapon.generated.h"
 
@@ -23,6 +25,8 @@ class FPSPROJECT_API AWeapon : public AActor , public  IFireable, public IIntera
 public:
 	// Sets default values for this actor's properties
 	AWeapon();
+	UFUNCTION(BlueprintCallable)
+	virtual void Init();
 	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
@@ -37,30 +41,20 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* FireMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	TObjectPtr<USoundBase> FireSound;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int _MaxAmmo = 100;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int _MaxClipSize = 12;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon")
-	int StartingAmmo = 50;
 	
 	UFUNCTION(BlueprintCallable)
 	bool AddAmmo(int InAmmo);
 
 protected:
 	
+
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USceneComponent> _Root;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USkeletalMeshComponent> _SkeletonMesh;
-
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UArrowComponent> _Arrow;
 
@@ -69,9 +63,16 @@ protected:
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
-	
-	int _CurrentAmmo;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UWeaponType> _TypeData;
+	TObjectPtr<USoundBase> _FireSound;
+
+	float _Damage;
+	float _ReloadTime;
+	int _MaxClipSize;
+	float ReloadTime;
 	int _CurrentClip;
+	int _CurrentAmmo;
 	
 	void PlayFireAudio();
 	

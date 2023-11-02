@@ -13,15 +13,20 @@ AWeapon_Hitscan::AWeapon_Hitscan()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	_Damage = 10.0f;
-	_Range = 1000.0f;
+}
+
+void AWeapon_Hitscan::Init()
+{
+	if(_TypeData == nullptr)
+		return;
+	Super::Init();
+	_Range = _TypeData->_Range;
 }
 
 bool AWeapon_Hitscan::Fire_Implementation()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Fire"));
 	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _Range;
+	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _TypeData->_Range;
 	FHitResult Hit;
 	if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),

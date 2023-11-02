@@ -15,6 +15,14 @@ AWeapon_Projectile::AWeapon_Projectile()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AWeapon_Projectile::Init()
+{
+	if(_TypeData == nullptr)
+		return;
+	Super::Init();
+	_Projectile	= _TypeData->_Projectile;
+}
+
 bool AWeapon_Projectile::Fire_Implementation()
 {
 	//Spawn Params

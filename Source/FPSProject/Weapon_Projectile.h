@@ -16,10 +16,9 @@ class FPSPROJECT_API AWeapon_Projectile : public AWeapon
 public:
 	// Sets default values for this actor's properties
 	AWeapon_Projectile();
-
+	virtual void Init() override;
 	virtual bool Fire_Implementation() override;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TSubclassOf<AFPSProjectProjectile> _Projectile;
 protected:
 	// Called when the game starts or when spawned

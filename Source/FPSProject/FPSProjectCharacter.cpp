@@ -7,12 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-
-
-//////////////////////////////////////////////////////////////////////////
-// AFPSProjectCharacter
 
 AFPSProjectCharacter::AFPSProjectCharacter()
 {
@@ -141,7 +136,7 @@ AActor* AFPSProjectCharacter::GetDesiredInteract()
 	FHitResult Hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
-	{},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Blue,FLinearColor::Green);
+	{},EDrawDebugTrace::None,Hit,true,FLinearColor::Blue,FLinearColor::Green);
 
 	float PreviousDistance = 1000;
 	AActor* DesiredInteractalbe = nullptr;

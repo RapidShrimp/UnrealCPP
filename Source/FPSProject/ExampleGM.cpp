@@ -9,8 +9,7 @@ AExampleGM::AExampleGM()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"));
-    DefaultPawnClass = PlayerPawnClassFinder.Class;
+	
 }
 
 void AExampleGM::PostLogin(APlayerController* NewPlayer)

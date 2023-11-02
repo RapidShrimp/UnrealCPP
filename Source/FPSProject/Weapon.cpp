@@ -37,14 +37,26 @@ AWeapon::AWeapon()
 	_SphereCollider->SetSphereRadius(100.0f);
 }
 
+void AWeapon::Init()
+{
+	if(_TypeData == nullptr)
+		return;
+	_SkeletonMesh->SetSkeletalMesh(_TypeData->_WeaponMesh);
+	_FireSound = _TypeData->FireSound;
+	_Damage = _TypeData->_Damage;
+	_ReloadTime = _TypeData->_ReloadTime;
+	_CurrentAmmo = _TypeData->_InitialAmmo;
+	_MaxClipSize = _TypeData->_ClipSize;
+	_CurrentClip = _MaxClipSize;
+}
 
 
 void AWeapon::BeginPlay()
 {
+	Init();
 	Super::BeginPlay();
 	_SphereCollider->OnComponentBeginOverlap.AddUniqueDynamic(this,&AWeapon::OnBeginOverlap);
 	_SphereCollider->OnComponentEndOverlap.AddUniqueDynamic(this,&AWeapon::OnEndOverlap);
-	_CurrentAmmo = StartingAmmo;
 	SetCanInteract(true);
 	Reload_Implementation();
 }
@@ -160,10 +172,11 @@ bool AWeapon::Fire_Implementation()
 
 void AWeapon::PlayFireAudio()
 {
-	if(FireSound!=nullptr)
+	if(_FireSound==nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, this->GetActorLocation());
+		return;
 	}
+		UGameplayStatics::PlaySoundAtLocation(this, _FireSound, this->GetActorLocation());
 }
 
 
