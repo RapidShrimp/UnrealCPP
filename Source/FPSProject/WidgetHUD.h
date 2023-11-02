@@ -20,7 +20,7 @@ public:
 	virtual void NativeConstruct() override;
 	void UpdateHealth(float newHealthRatio);
 	void UpdateScore(int newScore);
-
+	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;
@@ -29,10 +29,10 @@ private:
 	TObjectPtr<UTextBlock> ScoreText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentClip;
+	TObjectPtr<UTextBlock> CurrentClipText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> MaxClip;
+	TObjectPtr<UTextBlock> MaxClipText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentAmmo;
+	TObjectPtr<UTextBlock> CurrentAmmoText;
 	
 };

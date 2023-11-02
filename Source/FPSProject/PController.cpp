@@ -39,15 +39,21 @@ void APController::HandleHealthUpdate(float newHealth,float maxHealth,float heal
 	_HUDWidget->UpdateHealth(newHealth/maxHealth);
 }
 
+void APController::HandleAmmoCountersUpdate(int CurrentAmmo, int ClipSize, int CurrentClip)
+{
+	_HUDWidget->UpdateAmmoCounters(CurrentAmmo,ClipSize,CurrentClip);
+}
+
 void APController::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupInputComponent();
 		//Adding Mapping Context & Subsystem
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
+	
 	if(_HUDWidgetClass)
 	{
 		UE_LOG(LogTemp,Warning,TEXT("WidgetCreated"));
@@ -61,25 +67,27 @@ void APController::BeginPlay()
 	}
 }
 
-void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext)
+void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon)
 {
-	if(MyPlayerCharacter != nullptr)
+	if(MyPlayerCharacter == nullptr)
+		return;
+	
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(InFireMappingContext, 1);
-			FireMappingContext = InFireMappingContext;
-			UE_LOG(LogTemp,Warning,TEXT("Successful Binding"))
-		}
+		Subsystem->AddMappingContext(InFireMappingContext, 1);
+		FireMappingContext = InFireMappingContext;
+		Weapon->OnAmmoCountersUpdate.AddUniqueDynamic(this,&APController::HandleAmmoCountersUpdate);			
 	}
+	
 }
 
-void APController::RemoveWeaponMappings()
+void APController::RemoveWeaponMappings(AWeapon* Weapon)
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer()))
 	{
 		Subsystem->RemoveMappingContext(FireMappingContext);
 		FireMappingContext = nullptr;
+		Weapon->OnAmmoCountersUpdate.RemoveDynamic(this,&APController::HandleAmmoCountersUpdate);
 	}
 }
 

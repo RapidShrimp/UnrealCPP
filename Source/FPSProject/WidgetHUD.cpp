@@ -29,3 +29,13 @@ void UWidgetHUD::UpdateScore(int newScore)
 	if(ScoreText)
 		ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), newScore)));
 }
+
+void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentClip)
+{
+	if(CurrentAmmoText)
+		CurrentAmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurrentAmmo)));
+	if(MaxClipText)
+		MaxClipText->SetText(FText::FromString(FString::Printf(TEXT("%d"), ClipSize)));
+	if(CurrentClipText)
+		CurrentClipText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurrentClip)));
+}

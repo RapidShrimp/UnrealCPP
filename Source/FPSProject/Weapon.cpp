@@ -100,7 +100,10 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
 		OwningCharacter->RemoveInteractable(this);
-		PlayerController->AddWeaponMappings(FireMappingContext);
+		PlayerController->AddWeaponMappings(FireMappingContext,this);
+		SetOwner(PlayerController);
+		SetInstigator(OwningCharacter);
+		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	}
 	
 }
@@ -114,7 +117,7 @@ void AWeapon::DropWeapon()
 	
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		PlayerController->RemoveWeaponMappings(); 
+		PlayerController->RemoveWeaponMappings(this); 
 		FDetachmentTransformRules DetatchmentRules(EDetachmentRule::KeepWorld, true);
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
@@ -141,6 +144,7 @@ bool AWeapon::Reload_Implementation()
 	AmmoToAdd = FMath::Min(_CurrentAmmo,AmmoToAdd);
 	_CurrentClip += AmmoToAdd;
 	_CurrentAmmo -= AmmoToAdd;
+	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	return false;
 }
 
@@ -150,6 +154,8 @@ void AWeapon::Interact_Implementation(AActor* Interacting)
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
 	{
 		AttachWeapon(Player);
+		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
+
 	}
 }
 
@@ -160,14 +166,14 @@ bool AWeapon::Fire_Implementation()
 	{
 		PlayFireAudio();
 		_CurrentClip-=1;
-		UE_LOG(LogTemp, Warning, TEXT("Current Clip: %d / %d, Current Ammo %d"), _CurrentClip,_MaxClipSize,_CurrentAmmo);
+		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 		return  true;
 	}
 	else
 	{
 		//Reload Prompt;
-	}
 	return false;
+	}
 }
 
 void AWeapon::PlayFireAudio()

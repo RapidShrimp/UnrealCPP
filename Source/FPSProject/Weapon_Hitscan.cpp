@@ -25,6 +25,9 @@ void AWeapon_Hitscan::Init()
 
 bool AWeapon_Hitscan::Fire_Implementation()
 {
+	if(!Super::Fire_Implementation())
+		return false;
+	
 	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _TypeData->_Range;
 	FHitResult Hit;

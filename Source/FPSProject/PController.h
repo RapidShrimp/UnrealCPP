@@ -9,11 +9,11 @@
 #include "PController.generated.h"
 
 class AFPSProjectCharacter;
+class AWeapon;
 
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
-
 class UWidgetHUD;
 
 /**
@@ -92,9 +92,11 @@ protected:
 
 	UFUNCTION()
 	void HandleHealthUpdate(float newHealth,float maxHealth,float healthChange);
+	UFUNCTION()
+	void HandleAmmoCountersUpdate(int CurrentAmmo,int ClipSize,int CurrentClip);
 
 public:
-	void AddWeaponMappings(UInputMappingContext* InFireMappingContext);
-	void RemoveWeaponMappings();
+	void AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon);
+	void RemoveWeaponMappings(AWeapon* Weapon);
 
 };

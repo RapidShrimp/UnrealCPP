@@ -11,6 +11,8 @@
 #include "InputAction.h"
 #include "Weapon.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate,int,CurrentAmmo,int,ClipSize,int,CurrentClip);
+
 class USkeletalMeshComponent;
 class UArrowComponent;
 class USphereComponent;
@@ -27,6 +29,9 @@ public:
 	AWeapon();
 	UFUNCTION(BlueprintCallable)
 	virtual void Init();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FOnUpdateAmmoCountersUpdate OnAmmoCountersUpdate;
 	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
