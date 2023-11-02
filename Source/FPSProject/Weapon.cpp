@@ -58,20 +58,15 @@ void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		else if(PlayerCharacter->GetHasRifle())
 		{
 			PlayerCharacter->AddInteractable(this);
-			UE_LOG(LogTemp,Warning,TEXT("Added"));
-
 		}
 	} 
 }
 
-void AWeapon::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
+void AWeapon::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex)
 {
 	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
 	{
 		PlayerCharacter->RemoveInteractable(this);
-		UE_LOG(LogTemp,Warning,TEXT("Removed"));
-
 	}
 }
 
