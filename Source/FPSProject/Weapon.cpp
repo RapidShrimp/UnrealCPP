@@ -22,10 +22,8 @@ AWeapon::AWeapon()
 	_Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(_Root);
 	
-	
 	_SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	_SkeletonMesh->SetupAttachment(_Root);
-
 	
 	_SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("PickupBox"));
 	_SphereCollider->SetupAttachment(_SkeletonMesh);
@@ -90,8 +88,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	{
 		return;
 	}
-
-
+	
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -172,7 +169,6 @@ bool AWeapon::Fire_Implementation()
 	}
 	else
 	{
-		//Reload Prompt;
 	return false;
 	}
 }
