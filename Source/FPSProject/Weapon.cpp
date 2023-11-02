@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "FPSProjectCharacter.h"
+#include "InteractComp.h"
 #include "Components/ArrowComponent.h"
 
 #include "PController.h"
@@ -69,7 +70,7 @@ void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			AttachWeapon(PlayerCharacter);
 		else if(PlayerCharacter->GetHasRifle())
 		{
-			PlayerCharacter->AddInteractable(this);
+			PlayerCharacter->GetInteractComp()->AddInteractable(this);
 		}
 	} 
 }
@@ -78,7 +79,7 @@ void AWeapon::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
 	{
-		PlayerCharacter->RemoveInteractable(this);
+		PlayerCharacter->GetInteractComp()->RemoveInteractable(this);
 	}
 }
 
@@ -99,7 +100,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	OwningCharacter->SetRifle(true,this);
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		OwningCharacter->RemoveInteractable(this);
+		OwningCharacter->GetInteractComp()->RemoveInteractable(this);
 		PlayerController->AddWeaponMappings(FireMappingContext,this);
 		SetOwner(PlayerController);
 		SetInstigator(OwningCharacter);
@@ -127,7 +128,7 @@ void AWeapon::DropWeapon()
 			SetActorLocation(Hit.Location);
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
 		}
-		OwningCharacter->AddInteractable(this);
+		OwningCharacter->GetInteractComp()->RemoveInteractable(this);
 		OwningCharacter = nullptr;
 	}
 }

@@ -3,6 +3,7 @@
 #include "FPSProjectCharacter.h"
 
 #include "HealthComponent.h"
+#include "InteractComp.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -32,7 +33,9 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	
 	_HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HeatlhComp"));
+	_InteractComp = CreateDefaultSubobject<UInteractComp>(TEXT("InteractComp"));
 }
 
 void AFPSProjectCharacter::BeginPlay()
@@ -84,13 +87,11 @@ void AFPSProjectCharacter::SprintStop()
 void AFPSProjectCharacter::StartCrouch()
 {
 	SprintStop();
-	UE_LOG(LogTemp,Warning,TEXT("CrouchStart"))
 	Crouch();
 }
 
 void AFPSProjectCharacter::StopCrouch()
 {
-	UE_LOG(LogTemp,Warning,TEXT("CrouchEnd"))
 	UnCrouch();
 }
 
@@ -111,60 +112,18 @@ void AFPSProjectCharacter::ReloadWeapon()
 }
 
 
-void AFPSProjectCharacter::AddInteractable(AActor* InterfacedActor)
-{
-	IInteract* Interfaced = Cast<IInteract>(InterfacedActor);
-	if(UKismetSystemLibrary::DoesImplementInterface(InterfacedActor,UInteract::StaticClass()) && Interfaced->GetCanInteract())
-	{
-		InteractableList.AddUnique(InterfacedActor);
-	}
-}
 
-void AFPSProjectCharacter::RemoveInteractable(AActor* InterfacedActor)
-{
-	if(InteractableList.Find(InterfacedActor))
-	{
-		InteractableList.Remove(InterfacedActor);
-	}
-}
 
-AActor* AFPSProjectCharacter::GetDesiredInteract()
+void AFPSProjectCharacter::Dash()
 {
-	FVector StartLoc = GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector EndLoc = StartLoc + GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
-	FHitResult Hit;
-	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
-	UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
-	{},EDrawDebugTrace::None,Hit,true,FLinearColor::Blue,FLinearColor::Green);
-
-	float PreviousDistance = 1000;
-	AActor* DesiredInteractalbe = nullptr;
-	for(int i = 0; i < InteractableList.Num(); i++)
-	{
-		if(FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation())<PreviousDistance) //Get the distance from hit location to the 
-		{
-			PreviousDistance = FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation());
-			DesiredInteractalbe = InteractableList[i];
-		} 
-	}
-	return DesiredInteractalbe;
 }
 
 void AFPSProjectCharacter::Interact()
 {
-	AActor* Desired = GetDesiredInteract();
-	if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
+	if(_InteractComp != nullptr)
 	{
-		if(GetHasRifle() && UKismetSystemLibrary::DoesImplementInterface(Desired, UFireable::StaticClass()))
-		{
-			MyWeapon->DropWeapon();
-		}
-		IInteract::Execute_Interact(Desired,this);
+		_InteractComp->Interact();
 	}
-}
-
-void AFPSProjectCharacter::Dash()
-{
 }
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)

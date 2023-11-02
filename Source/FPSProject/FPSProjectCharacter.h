@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include "FPSProjectCharacter.generated.h"
 
+class UInteractComp;
 class UHealthComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -27,6 +28,9 @@ class AFPSProjectCharacter : public ACharacter
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UHealthComponent> _HealthComponent;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInteractComp> _InteractComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
@@ -68,15 +72,13 @@ public:
 	void StartCrouch();
 	void StopCrouch();
 	void Dash();
-
-	//Interact Functions
-	TArray<AActor*> InteractableList;
-	void AddInteractable(AActor* InterfacedActor);
-	void RemoveInteractable(AActor* InterfacedActor);
-	AActor* GetDesiredInteract();
+	
 	void Interact();
-
+	
 	//Interface Weapon Calls
+	AWeapon* GetWeapon(){return MyWeapon;}
+	UInteractComp* GetInteractComp(){return _InteractComp;}
+	
 	void UseWeapon();
 	void ReloadWeapon();
 	
