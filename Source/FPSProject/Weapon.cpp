@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "FPSProjectCharacter.h"
+#include "InteractableComp.h"
 #include "InteractComp.h"
 #include "Components/ArrowComponent.h"
 
@@ -29,11 +30,14 @@ AWeapon::AWeapon()
 	_SphereCollider->SetupAttachment(_SkeletonMesh);
 	_SphereCollider->SetSphereRadius(45.0f);
 	
-	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
-	_Arrow->SetupAttachment(_SkeletonMesh);
-	
 	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 	_SphereCollider->SetSphereRadius(100.0f);
+	
+	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
+	_Arrow->SetupAttachment(_SkeletonMesh);
+
+	_InteractionComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Comp"));
+	_InteractionComp->SetupAttachment(_SkeletonMesh);
 }
 
 void AWeapon::Init()
@@ -49,35 +53,21 @@ void AWeapon::Init()
 	_CurrentClip = _MaxClipSize;
 }
 
-
 void AWeapon::BeginPlay()
 {
 	Init();
 	Super::BeginPlay();
 	_SphereCollider->OnComponentBeginOverlap.AddUniqueDynamic(this,&AWeapon::OnBeginOverlap);
-	_SphereCollider->OnComponentEndOverlap.AddUniqueDynamic(this,&AWeapon::OnEndOverlap);
 	SetCanInteract(true);
 	Reload_Implementation();
 }
 
-void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
 	{
 		if(!PlayerCharacter->GetHasRifle())
 			AttachWeapon(PlayerCharacter);
-		else if(PlayerCharacter->GetHasRifle())
-		{
-			PlayerCharacter->GetInteractComp()->AddInteractable(this);
-		}
-	} 
-}
-
-void AWeapon::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex)
-{
-	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
-	{
-		PlayerCharacter->GetInteractComp()->RemoveInteractable(this);
 	}
 }
 
@@ -135,8 +125,7 @@ bool AWeapon::AddAmmo(int InAmmo)
 	_CurrentAmmo += InAmmo;
 	return true;
 }
-
-bool AWeapon::Reload_Implementation()
+	bool AWeapon::Reload_Implementation()
 {
 	int AmmoToAdd = _MaxClipSize - _CurrentClip;
 	AmmoToAdd = FMath::Min(_CurrentAmmo,AmmoToAdd);
@@ -153,10 +142,8 @@ void AWeapon::Interact_Implementation(AActor* Interacting)
 	{
 		AttachWeapon(Player);
 		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
-
 	}
 }
-
 
 bool AWeapon::Fire_Implementation()
 {

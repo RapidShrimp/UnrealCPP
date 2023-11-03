@@ -16,13 +16,21 @@ class FPSPROJECT_API UInteractPrompt : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InteractText;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> InteractBar;
 	
-	FLinearColor _InteractColour;
-
-	//void UpdateInteract()
+	FLinearColor InteractColour;
+	float InteractionTime;
+	
+public:
+	void SetInteractPrompt(FString NewInteractText, FLinearColor NewColour, float NewInteractTime);
+	void HideInteractPrompt();
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void InteractStart();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void InteractCancel();
 };

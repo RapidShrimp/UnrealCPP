@@ -11,7 +11,9 @@
 #include "InputAction.h"
 #include "Weapon.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate,int,CurrentAmmo,int,ClipSize,int,CurrentClip);
+class UInteractableComp;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate, int, CurrentAmmo, int, ClipSize, int,
+                                               CurrentClip);
 
 class USkeletalMeshComponent;
 class UArrowComponent;
@@ -65,6 +67,9 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _SphereCollider;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UInteractableComp> _InteractionComp;
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
@@ -85,9 +90,5 @@ protected:
 private:
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 	
 };

@@ -3,6 +3,7 @@
 
 #include "WidgetHUD.h"
 
+#include "InteractPrompt.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -13,6 +14,8 @@ void UWidgetHUD::NativeConstruct()
 		HealthBar->SetPercent(1);
 	if(ScoreText)
 		ScoreText->SetText(FText::FromString("Score"));
+	if(InteractPrompt)
+		InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
 } 
 
 void UWidgetHUD::UpdateHealth(float newHealthRatio)

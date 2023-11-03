@@ -9,6 +9,7 @@
 /**
  * 
  */
+class UInteractPrompt;
 class UProgressBar;
 class UTextBlock;
 UCLASS(Abstract,BlueprintType)
@@ -28,6 +29,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ScoreText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInteractPrompt> InteractPrompt ;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentClipText;
 	UPROPERTY(meta = (BindWidget))

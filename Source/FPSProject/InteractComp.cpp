@@ -78,4 +78,3 @@ void UInteractComp::Interact()
 		IInteract::Execute_Interact(Desired,OwningCharacter);
 	}
 }
-
