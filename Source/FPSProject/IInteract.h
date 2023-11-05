@@ -11,6 +11,8 @@
  */
 
 
+class UInteractableComp;
+
 UINTERFACE()
 class UInteract : public UInterface
 {
@@ -22,9 +24,9 @@ class IInteract
 	GENERATED_BODY()
 
 protected:
+	
 	bool bCanInteract = false;
-
-
+	
 public:
 	bool GetCanInteract(){return bCanInteract;}
 	void SetCanInteract(bool Interactibility) {bCanInteract = Interactibility;}

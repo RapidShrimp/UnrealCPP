@@ -38,6 +38,7 @@ AWeapon::AWeapon()
 
 	_InteractionComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Comp"));
 	_InteractionComp->SetupAttachment(_SkeletonMesh);
+
 }
 
 void AWeapon::Init()
@@ -58,7 +59,6 @@ void AWeapon::BeginPlay()
 	Init();
 	Super::BeginPlay();
 	_SphereCollider->OnComponentBeginOverlap.AddUniqueDynamic(this,&AWeapon::OnBeginOverlap);
-	SetCanInteract(true);
 	Reload_Implementation();
 }
 
@@ -80,7 +80,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	}
 	
 	// Attach the weapon to the First Person Character
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	FAttachmentTransformRules const AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
 	//Mapping Rules
@@ -106,7 +106,7 @@ void AWeapon::DropWeapon()
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
 		PlayerController->RemoveWeaponMappings(this); 
-		FDetachmentTransformRules DetatchmentRules(EDetachmentRule::KeepWorld, true);
+		FDetachmentTransformRules  DetatchmentRules(EDetachmentRule::KeepWorld, true);
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
 		FHitResult Hit;
@@ -137,13 +137,16 @@ bool AWeapon::AddAmmo(int InAmmo)
 
 void AWeapon::Interact_Implementation(AActor* Interacting)
 {
-
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
 	{
+		IInteract::Interact_Implementation(Interacting);
+		UE_LOG(LogTemp,Warning,TEXT("INTERACTING"));
 		AttachWeapon(Player);
-		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	}
+	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 }
+
+
 
 bool AWeapon::Fire_Implementation()
 {
@@ -166,7 +169,7 @@ void AWeapon::PlayFireAudio()
 	{
 		return;
 	}
-		UGameplayStatics::PlaySoundAtLocation(this, _FireSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, _FireSound, this->GetActorLocation());
 }
 
 

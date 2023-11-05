@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSetInteractPromptSignature, FStr
 class USphereComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FPSPROJECT_API UInteractableComp : public USceneComponent
+class FPSPROJECT_API UInteractableComp : public UPrimitiveComponent
 {
 	GENERATED_BODY()
 
@@ -19,19 +19,20 @@ public:
 	// Sets default values for this component's properties
 	UInteractableComp();
 
+	UPROPERTY(BlueprintAssignable)
+	FSetInteractPromptSignature OnSetInteractPrompt;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _Collider;
 
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanInteract;
+	
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float _InteractSphereSize;
-	
-	UPROPERTY(BlueprintAssignable)
-	FSetInteractPromptSignature OnSetInteractPrompt;
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 private:
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

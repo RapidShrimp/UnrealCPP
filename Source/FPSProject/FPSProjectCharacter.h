@@ -86,9 +86,7 @@ public:
 	float DefaultFieldOfView = 90;
 	float DefaultWalkSpeed;
 	
-	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 };

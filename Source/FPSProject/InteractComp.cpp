@@ -4,6 +4,7 @@
 #include "InteractComp.h"
 
 #include "FPSProjectCharacter.h"
+#include "InteractableComp.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -14,7 +15,6 @@ UInteractComp::UInteractComp()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 // Called when the game starts
 void UInteractComp::BeginPlay()
 {
@@ -23,31 +23,29 @@ void UInteractComp::BeginPlay()
 	{
 		OwningCharacter = Player;
 	}
-	
 }
 
-void UInteractComp::AddInteractable(AActor* InterfacedActor)
+void UInteractComp::AddInteractable(AActor* InteractionActor)
 {
-	IInteract* Interfaced = Cast<IInteract>(InterfacedActor);
-	if(UKismetSystemLibrary::DoesImplementInterface(InterfacedActor,UInteract::StaticClass()) && Interfaced->GetCanInteract())
-	{
-		InteractableList.AddUnique(InterfacedActor);
-	}
+		InteractableList.AddUnique(InteractionActor);
+	UE_LOG(LogTemp,Warning,TEXT("Added"));
+
 }
 
-void UInteractComp::RemoveInteractable(AActor* InterfacedActor)
+void UInteractComp::RemoveInteractable(AActor* InteractionActor)
 {
-	if(InteractableList.Find(InterfacedActor))
+	if(InteractableList.Find(InteractionActor))
 	{
-		InteractableList.Remove(InterfacedActor);
+		InteractableList.Remove(InteractionActor);
+		UE_LOG(LogTemp,Warning,TEXT("Removed"));
 	}
+
 }
 
 AActor* UInteractComp::GetDesiredInteract()
 {
-	
-	FVector StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
+	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
 	FHitResult Hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
@@ -69,12 +67,9 @@ AActor* UInteractComp::GetDesiredInteract()
 void UInteractComp::Interact()
 {
 	AActor* Desired = GetDesiredInteract();
-	if(Desired != nullptr && UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
-	{
-		if(OwningCharacter->GetHasRifle() && UKismetSystemLibrary::DoesImplementInterface(Desired, UFireable::StaticClass()))
-		{
-			OwningCharacter->GetWeapon()->DropWeapon();
-		}
-		IInteract::Execute_Interact(Desired,OwningCharacter);
-	}
+	
+	if(!Desired)
+		return;
+	if(UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
+		IInteract::Execute_Interact(Desired,GetOwner());
 }

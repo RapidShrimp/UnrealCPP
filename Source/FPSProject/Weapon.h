@@ -37,8 +37,8 @@ public:
 	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
-	virtual void Interact_Implementation(AActor* Interacting) override;
-	
+	virtual  void Interact_Implementation(AActor* Interacting) override;
+
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachWeapon(AFPSProjectCharacter* TargetCharacter);
@@ -53,8 +53,6 @@ public:
 	bool AddAmmo(int InAmmo);
 
 protected:
-	
-
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USceneComponent> _Root;
