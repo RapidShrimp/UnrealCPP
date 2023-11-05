@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "WidgetHUD.generated.h"
 
+class UWidgetDash;
+class UImage;
 /**
  * 
  */
@@ -39,5 +41,8 @@ private:
 	TObjectPtr<UTextBlock> MaxClipText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentAmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetDash> DashUI;
 	
 };

@@ -108,6 +108,11 @@ void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
 void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
 void APController::CallDash() {MyPlayerCharacter->Dash();}
 
+void APController::CallSlide()
+{
+	MyPlayerCharacter->Slide();
+}
+
 void APController::CallInteract() {MyPlayerCharacter->Interact();}
 
 void APController::CallFireStart() {MyPlayerCharacter->UseWeapon();}

@@ -81,11 +81,16 @@ public:
 	void SprintStop();
 	void StartCrouch();
 	void StopCrouch();
+
+	void Slide();
+
+	
 	void Dash();
 	void DashRecharge();
 	FTimerHandle _DashTimer;
-
 	int CurrentDashes = _Dashes;
+
+
 	void Landed(const FHitResult& Hit) override;
 
 	

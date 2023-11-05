@@ -4,6 +4,7 @@
 #include "WidgetHUD.h"
 
 #include "InteractPrompt.h"
+#include "WidgetDash.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -16,6 +17,7 @@ void UWidgetHUD::NativeConstruct()
 		ScoreText->SetText(FText::FromString("Score"));
 	if(InteractPrompt)
 		InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
+
 } 
 
 void UWidgetHUD::UpdateHealth(float newHealthRatio)
@@ -45,5 +47,6 @@ void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentCl
 
 void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 {
-	UE_LOG(LogTemp,Warning,TEXT("UPDATE DASHES"));
+	if(DashUI)
+		DashUI->OnDashUpdate(DashesLeft,MaxDashes);
 }

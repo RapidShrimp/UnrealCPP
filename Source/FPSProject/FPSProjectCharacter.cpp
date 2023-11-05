@@ -95,25 +95,10 @@ void AFPSProjectCharacter::StopCrouch()
 	UnCrouch();
 }
 
-
-
-void AFPSProjectCharacter::UseWeapon()
+void AFPSProjectCharacter::Slide()
 {
-	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
-	{
-		IFireable::Execute_Fire(MyWeapon);
-	}
+	
 }
-
-void AFPSProjectCharacter::ReloadWeapon()
-{
-	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
-	{
-		IFireable::Execute_Reload(MyWeapon);
-	}
-}
-
-
 
 void AFPSProjectCharacter::Dash()
 {
@@ -152,6 +137,8 @@ void AFPSProjectCharacter::Landed(const FHitResult& Hit)
 
 
 
+
+
 void AFPSProjectCharacter::Interact()
 {
 	if(_InteractComp != nullptr)
@@ -159,6 +146,10 @@ void AFPSProjectCharacter::Interact()
 		_InteractComp->Interact();
 	}
 }
+
+
+
+
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
@@ -172,4 +163,20 @@ void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 bool AFPSProjectCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+void AFPSProjectCharacter::UseWeapon()
+{
+	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
+	{
+		IFireable::Execute_Fire(MyWeapon);
+	}
+}
+
+void AFPSProjectCharacter::ReloadWeapon()
+{
+	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
+	{
+		IFireable::Execute_Reload(MyWeapon);
+	}
 }

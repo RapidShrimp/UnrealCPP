@@ -84,7 +84,10 @@ protected:
 	void CallLook(const FInputActionValue& Value);
 	void CallJumpingStart();
 	void CallJumpingEnd();
+	
 	void CallDash();
+	void CallSlide();
+	
 	void CallInteract();
 	
 	void CallFireStart();
