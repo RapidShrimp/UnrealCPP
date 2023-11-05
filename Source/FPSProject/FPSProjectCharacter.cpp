@@ -95,6 +95,8 @@ void AFPSProjectCharacter::StopCrouch()
 	UnCrouch();
 }
 
+
+
 void AFPSProjectCharacter::UseWeapon()
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
@@ -111,9 +113,42 @@ void AFPSProjectCharacter::ReloadWeapon()
 	}
 }
 
+
+
 void AFPSProjectCharacter::Dash()
 {
+	if(CurrentDashes <= 0)
+		return;
+
+	FVector Speed = GetActorForwardVector();
+	Speed.Normalize(0.01f);
+	Speed.Z = 0;
+	UE_LOG(LogTemp,Display,TEXT(" Velocity = X %f , Y %f , Z %f "),Speed.X,Speed.Y,Speed.Z);
+	LaunchCharacter(Speed * _DashForce,true,false);
+	CurrentDashes-=1;
 }
+
+void AFPSProjectCharacter::DashRecharge()
+{
+	CurrentDashes++;
+	if(CurrentDashes >= _Dashes)
+	{
+		GetWorldTimerManager().ClearTimer(_DashTimer);
+		_DashTimer.Invalidate();
+		CurrentDashes = _Dashes;
+	}
+}
+
+void AFPSProjectCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	if(!_DashTimer.IsValid() && _Dashes > CurrentDashes)
+	{
+		GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
+	}
+}
+
+
 
 void AFPSProjectCharacter::Interact()
 {

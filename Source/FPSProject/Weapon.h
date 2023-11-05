@@ -12,8 +12,7 @@
 #include "Weapon.generated.h"
 
 class UInteractableComp;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate, int, CurrentAmmo, int, ClipSize, int,
-                                               CurrentClip);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate, int, CurrentAmmo, int, ClipSize, int, CurrentClip);
 
 class USkeletalMeshComponent;
 class UArrowComponent;
@@ -62,19 +61,16 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UArrowComponent> _Arrow;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<USphereComponent> _SphereCollider;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<UInteractableComp> _InteractionComp;
+	
+	/*UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UInteractableComp> _InteractionComp;*/
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UWeaponType> _TypeData;
-	TObjectPtr<USoundBase> _FireSound;
 
+	TObjectPtr<USoundBase> _FireSound;
 	float _Damage;
 	float _ReloadTime;
 	int _MaxClipSize;
@@ -86,7 +82,6 @@ protected:
 	
 	virtual void BeginPlay() override;
 private:
-	UFUNCTION()
-	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	
 };

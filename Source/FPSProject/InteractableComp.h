@@ -28,11 +28,11 @@ public:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCanInteract;
+	bool bCanInteract = true;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float _InteractSphereSize;
+	float _InteractSphereSize = 75.0f;
 private:
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

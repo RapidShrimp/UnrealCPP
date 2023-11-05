@@ -3,6 +3,7 @@
 
 #include "InteractableComp.h"
 
+#include "FPSProjectCharacter.h"
 #include "IInteract.h"
 #include "InteractComp.h"
 #include "Components/SphereComponent.h"
@@ -13,7 +14,7 @@
 UInteractableComp::UInteractableComp()
 {
 	_Collider = CreateDefaultSubobject<USphereComponent>(TEXT("InteractCollider"));
-	_Collider->SetupAttachment(GetAttachmentRoot());
+	_Collider->SetupAttachment(this);
 	_Collider->SetSphereRadius(85.0f);
 }
 
@@ -24,7 +25,7 @@ void UInteractableComp::BeginPlay()
 	_Collider->OnComponentEndOverlap.AddUniqueDynamic(this, &UInteractableComp::OnEndOverlap);
 	if(!UKismetSystemLibrary::DoesImplementInterface(GetOwner(),UInteract::StaticClass()))
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Component Attatched to Actor Without Interact Interface"));
+		UE_LOG(LogTemp,Error,TEXT("Component Attatched to Actor Without Interact Interface"));
 		DestroyComponent(false);
 	}
 }
@@ -34,17 +35,23 @@ void UInteractableComp::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	if(!bCanInteract)
 		return;
 	
-	UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
-	
+	//UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
+	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
+	UInteractComp* InteractorComp = Player->GetInteractComp();
 	if(InteractorComp)
+	{
 		InteractorComp->AddInteractable(GetOwner());
+	}
 }
 
 void UInteractableComp::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex)
 {
-	UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
-	//GetInteractionComp
+	//UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
+	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
+	UInteractComp* InteractorComp = Player->GetInteractComp();
+	
 	if(InteractorComp)
-		InteractorComp->RemoveInteractable
-	(GetOwner());
+	{
+		InteractorComp->RemoveInteractable(GetOwner());
+	}
 }

@@ -26,18 +26,11 @@ AWeapon::AWeapon()
 	_SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	_SkeletonMesh->SetupAttachment(_Root);
 	
-	_SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("PickupBox"));
-	_SphereCollider->SetupAttachment(_SkeletonMesh);
-	_SphereCollider->SetSphereRadius(45.0f);
-	
-	_SphereCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
-	_SphereCollider->SetSphereRadius(100.0f);
-	
 	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	_Arrow->SetupAttachment(_SkeletonMesh);
 
-	_InteractionComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Comp"));
-	_InteractionComp->SetupAttachment(_SkeletonMesh);
+	/*_InteractionComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Comp"));
+	_InteractionComp->SetupAttachment(_Root);*/
 
 }
 
@@ -58,17 +51,21 @@ void AWeapon::BeginPlay()
 {
 	Init();
 	Super::BeginPlay();
-	_SphereCollider->OnComponentBeginOverlap.AddUniqueDynamic(this,&AWeapon::OnBeginOverlap);
-	Reload_Implementation();
 }
 
-void AWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWeapon::Interact_Implementation(AActor* Interacting)
 {
-	if(AFPSProjectCharacter* PlayerCharacter = Cast<AFPSProjectCharacter>(OtherActor))
+	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
 	{
-		if(!PlayerCharacter->GetHasRifle())
-			AttachWeapon(PlayerCharacter);
+		/*if(Player->GetHasRifle())
+		{
+		Player->GetWeapon()->DropWeapon();
+		}
+		AttachWeapon(Player);*/
+		UE_LOG(LogTemp,Warning,TEXT("Interact"))
+
 	}
+	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 }
 
 void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
@@ -87,7 +84,6 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	OwningCharacter->SetRifle(true,this);
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
-		OwningCharacter->GetInteractComp()->RemoveInteractable(this);
 		PlayerController->AddWeaponMappings(FireMappingContext,this);
 		SetOwner(PlayerController);
 		SetInstigator(OwningCharacter);
@@ -115,7 +111,6 @@ void AWeapon::DropWeapon()
 			SetActorLocation(Hit.Location);
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
 		}
-		OwningCharacter->GetInteractComp()->RemoveInteractable(this);
 		OwningCharacter = nullptr;
 	}
 }
@@ -134,19 +129,6 @@ bool AWeapon::AddAmmo(int InAmmo)
 	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	return false;
 }
-
-void AWeapon::Interact_Implementation(AActor* Interacting)
-{
-	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
-	{
-		IInteract::Interact_Implementation(Interacting);
-		UE_LOG(LogTemp,Warning,TEXT("INTERACTING"));
-		AttachWeapon(Player);
-	}
-	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
-}
-
-
 
 bool AWeapon::Fire_Implementation()
 {
@@ -171,5 +153,3 @@ void AWeapon::PlayFireAudio()
 	}
 	UGameplayStatics::PlaySoundAtLocation(this, _FireSound, this->GetActorLocation());
 }
-
-
