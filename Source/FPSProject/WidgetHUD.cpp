@@ -42,3 +42,8 @@ void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentCl
 	if(CurrentClipText)
 		CurrentClipText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurrentClip)));
 }
+
+void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
+{
+	UE_LOG(LogTemp,Warning,TEXT("UPDATE DASHES"));
+}

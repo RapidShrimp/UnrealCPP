@@ -22,6 +22,7 @@ public:
 	void UpdateHealth(float newHealthRatio);
 	void UpdateScore(int newScore);
 	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
+	void UpdateDash(int DashesLeft,int MaxDashes);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;

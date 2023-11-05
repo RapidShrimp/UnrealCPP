@@ -126,11 +126,13 @@ void AFPSProjectCharacter::Dash()
 	UE_LOG(LogTemp,Display,TEXT(" Velocity = X %f , Y %f , Z %f "),Speed.X,Speed.Y,Speed.Z);
 	LaunchCharacter(Speed * _DashForce,true,false);
 	CurrentDashes-=1;
+	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
 }
 
 void AFPSProjectCharacter::DashRecharge()
 {
 	CurrentDashes++;
+	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
 	if(CurrentDashes >= _Dashes)
 	{
 		GetWorldTimerManager().ClearTimer(_DashTimer);

@@ -94,6 +94,8 @@ protected:
 	void HandleHealthUpdate(float newHealth,float maxHealth,float healthChange);
 	UFUNCTION()
 	void HandleAmmoCountersUpdate(int CurrentAmmo,int ClipSize,int CurrentClip);
+	UFUNCTION()
+	void HandleDashUpdate(int DashesLeft,int MaxDashes);
 
 public:
 	void AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon);

@@ -47,7 +47,7 @@ public:
 	/** Bool for AnimBP to switch to another animation set */
 
 	UPROPERTY(BlueprintAssignable)
-	FUpdateDashSignature OnDash;
+	FUpdateDashSignature OnDashUpdate;
 
 	/** Setter & Getter for bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
@@ -101,7 +101,8 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
 	float DefaultFieldOfView = 90;
 	float DefaultWalkSpeed;
-	
+
+	UHealthComponent* GetHealthComponent() const {return _HealthComponent; }
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 

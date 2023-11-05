@@ -44,6 +44,11 @@ void APController::HandleAmmoCountersUpdate(int CurrentAmmo, int ClipSize, int C
 	_HUDWidget->UpdateAmmoCounters(CurrentAmmo,ClipSize,CurrentClip);
 }
 
+void APController::HandleDashUpdate(int DashesLeft, int MaxDashes)
+{
+	_HUDWidget->UpdateDash(DashesLeft,MaxDashes);
+}
+
 void APController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -60,11 +65,13 @@ void APController::BeginPlay()
 		_HUDWidget = CreateWidget<UWidgetHUD,APController*>(this,_HUDWidgetClass.Get());
 		_HUDWidget->AddToViewport();
 	}
-	TObjectPtr<UHealthComponent> HealthComp;
-	if(HealthComp = MyPlayerCharacter->GetComponentByClass<UHealthComponent>())
+	
+	if(UHealthComponent* HealthComp = MyPlayerCharacter->GetHealthComponent())
 	{
 		HealthComp->OnHealthComponentDamaged.AddUniqueDynamic(this,&APController::HandleHealthUpdate);
 	}
+	if(MyPlayerCharacter)
+		MyPlayerCharacter->OnDashUpdate.AddUniqueDynamic(this,&APController::HandleDashUpdate);
 }
 
 void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon)
