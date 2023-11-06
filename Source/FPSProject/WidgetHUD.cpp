@@ -17,7 +17,6 @@ void UWidgetHUD::NativeConstruct()
 		ScoreText->SetText(FText::FromString("Score"));
 	if(InteractPrompt)
 		InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
-
 } 
 
 void UWidgetHUD::UpdateHealth(float newHealthRatio)
@@ -48,5 +47,8 @@ void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentCl
 void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 {
 	if(DashUI)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("DASH ON HUD"))
 		DashUI->OnDashUpdate(DashesLeft,MaxDashes);
+	}
 }
