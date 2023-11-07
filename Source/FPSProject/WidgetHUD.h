@@ -24,6 +24,9 @@ public:
 	void UpdateHealth(float newHealthRatio);
 	void UpdateScore(int newScore);
 	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
+
+	bool bDashInit;
+	void InitDash(int Dashes);
 	void UpdateDash(int DashesLeft,int MaxDashes);
 private:
 	UPROPERTY(meta = (BindWidget))

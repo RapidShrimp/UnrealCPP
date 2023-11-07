@@ -111,6 +111,12 @@ void AFPSProjectCharacter::Dash()
 	Speed.Z = 0;
 	LaunchCharacter(Speed * _DashForce,true,false);
 	CurrentDashes-=1;
+	if(_DashTimer.IsValid())
+		GetWorldTimerManager().ClearTimer(_DashTimer);
+
+	
+	GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
+	
 	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
 }
 
@@ -123,15 +129,6 @@ void AFPSProjectCharacter::DashRecharge()
 		GetWorldTimerManager().ClearTimer(_DashTimer);
 		_DashTimer.Invalidate();
 		CurrentDashes = _Dashes;
-	}
-}
-
-void AFPSProjectCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-	if(!_DashTimer.IsValid() && _Dashes > CurrentDashes)
-	{
-		GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
 	}
 }
 

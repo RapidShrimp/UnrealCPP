@@ -46,8 +46,18 @@ void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentCl
 		CurrentClipText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurrentClip)));
 }
 
+void UWidgetHUD::InitDash(int Dashes)
+{
+	for(int i = 0; i<Dashes-1; i++)
+	{
+		//Dynamically Create Dash UI Here;
+	}
+}
+
 void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 {
+	if(!bDashInit)
+		InitDash(MaxDashes);
 	if(DashUI)
 	{
 		int i = 0;
@@ -58,7 +68,6 @@ void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 			{
 				IsFull = i < DashesLeft;
 				DashWidget->SetBrush(IsFull);
-				UE_LOG(LogTemp,Warning,TEXT("IMAGE BRUSH SET"))
 				i+=1;
 			}
 		}
