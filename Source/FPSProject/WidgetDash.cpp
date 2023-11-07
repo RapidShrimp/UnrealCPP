@@ -13,31 +13,14 @@ void UWidgetDash::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UWidgetDash::Init(int MaxDashes)
+void UWidgetDash::SetBrush(bool IsFull)
 {
-	for(int i = 0; i < MaxDashes; i++)
-	{
-		UImage* NewImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(),TEXT("ImageWidget"));
-		NewImage->SetBrushFromTexture(DashFullImage);
-		DashArr.Add(NewImage);
-		
-	}
-	bInit = true;
+	if(!DashImage)
+		return;
+	if(IsFull)
+		DashImage->SetBrushFromTexture(DashFullImage);
+	else
+		DashImage->SetBrushFromTexture(DashEmptyImage);
 }
 
-void UWidgetDash::OnDashUpdate(int CurrentDashes, int MaxDashes)
-{
-	if(!bInit)
-		Init(MaxDashes);
-	UE_LOG(LogTemp,Warning,TEXT("DashArrItems %d"),DashArr.Num())
 
-	for(int i = 0; i < DashArr.Num()-1; i++)
-	{
-		if(i <= CurrentDashes - 1)
-			DashArr[i]->SetBrushFromTexture(DashFullImage);
-		else
-			DashArr[i]->SetBrushFromTexture(DashFullImage);
-
-	}
-	
-}

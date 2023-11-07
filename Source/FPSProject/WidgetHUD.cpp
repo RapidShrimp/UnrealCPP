@@ -5,6 +5,8 @@
 
 #include "InteractPrompt.h"
 #include "WidgetDash.h"
+
+#include "Components/HorizontalBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -48,7 +50,18 @@ void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 {
 	if(DashUI)
 	{
-		UE_LOG(LogTemp,Warning,TEXT("DASH ON HUD"))
-		DashUI->OnDashUpdate(DashesLeft,MaxDashes);
+		int i = 0;
+		bool IsFull;
+		for (UWidget* Widget: DashUI->GetAllChildren())
+		{
+			if(UWidgetDash* DashWidget = Cast<UWidgetDash>(Widget))
+			{
+				IsFull = i < DashesLeft;
+				DashWidget->SetBrush(IsFull);
+				UE_LOG(LogTemp,Warning,TEXT("IMAGE BRUSH SET"))
+				i+=1;
+			}
+		}
+		
 	}
 }

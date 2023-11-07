@@ -27,18 +27,13 @@ void UInteractComp::BeginPlay()
 
 void UInteractComp::AddInteractable(AActor* InteractionActor)
 {
-		UE_LOG(LogTemp,Warning,TEXT("Added %s"),*InteractionActor->GetName() )
-		InteractableList.AddUnique(InteractionActor);
+	UE_LOG(LogTemp,Warning,TEXT("Added %s"),*InteractionActor->GetName() )
+	InteractableList.AddUnique(InteractionActor);
 }
 
 void UInteractComp::RemoveInteractable(AActor* InteractionActor)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Looking for %s, Was Successful? : %hd"),*InteractionActor->GetName(),InteractableList.Find(InteractionActor));
-	if(InteractableList.Find(InteractionActor))
-	{
-		UE_LOG(LogTemp,Warning,TEXT("Removed %s"),*InteractionActor->GetName() )
-		InteractableList.Remove(InteractionActor);
-	}
+	InteractableList.Remove(InteractionActor);
 }
 
 AActor* UInteractComp::GetDesiredInteract()

@@ -15,14 +15,9 @@ UCLASS()
 class FPSPROJECT_API UWidgetDash : public UUserWidget
 {
 	GENERATED_BODY()
-protected:
 
-	bool bInit = false;
-	
 public:
 
-	TArray<TObjectPtr<UImage>> DashArr;
-	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UTexture2D> DashFullImage;
 	
@@ -30,14 +25,10 @@ public:
 	TObjectPtr<UTexture2D> DashEmptyImage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> DashContainer;
+	TObjectPtr<UImage> DashImage;
 
 	
 	virtual void NativeConstruct() override;
 
-	void Init(int MaxDashes);
-	
-	TObjectPtr<UImage> BaseImageClass;
-	void OnDashUpdate(int CurrentDashes, int MaxDashes);
-
+	void SetBrush(bool IsFull);
 };

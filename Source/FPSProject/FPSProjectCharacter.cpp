@@ -41,6 +41,7 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 void AFPSProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	OnDashUpdate.Broadcast(CurrentDashes, _Dashes);
 }
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)

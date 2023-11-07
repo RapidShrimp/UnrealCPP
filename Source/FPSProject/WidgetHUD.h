@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "WidgetHUD.generated.h"
 
-class UWidgetDash;
+class UHorizontalBox;
 class UImage;
 /**
  * 
@@ -43,6 +43,6 @@ private:
 	TObjectPtr<UTextBlock> CurrentAmmoText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UWidgetDash> DashUI;
+	TObjectPtr<UHorizontalBox> DashUI;
 	
 };

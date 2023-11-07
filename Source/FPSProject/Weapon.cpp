@@ -28,10 +28,6 @@ AWeapon::AWeapon()
 	
 	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	_Arrow->SetupAttachment(_SkeletonMesh);
-
-	/*_InteractionComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Comp"));
-	_InteractionComp->SetupAttachment(_Root);*/
-
 }
 
 void AWeapon::Init()
@@ -57,12 +53,12 @@ void AWeapon::Interact_Implementation(AActor* Interacting)
 {
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(Interacting))
 	{
-		/*if(Player->GetHasRifle())
+		if(Player->GetHasRifle())
 		{
 		Player->GetWeapon()->DropWeapon();
 		}
-		AttachWeapon(Player);*/
-		UE_LOG(LogTemp,Warning,TEXT("Interact"))
+		AttachWeapon(Player);
+		UE_LOG(LogTemp,Warning,TEXT("Interacted"))
 
 	}
 	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
@@ -73,6 +69,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 	OwningCharacter = TargetCharacter;
 	if (OwningCharacter == nullptr)
 	{
+		UE_LOG(LogTemp,Warning,TEXT("NOT TYPE PLAYER"))
 		return;
 	}
 	

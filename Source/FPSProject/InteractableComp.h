@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSetInteractPromptSignature, FStr
 class USphereComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FPSPROJECT_API UInteractableComp : public UPrimitiveComponent
+class FPSPROJECT_API UInteractableComp : public UActorComponent
 {
 	GENERATED_BODY()
 

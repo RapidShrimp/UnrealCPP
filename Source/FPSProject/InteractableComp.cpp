@@ -14,8 +14,11 @@
 UInteractableComp::UInteractableComp()
 {
 	_Collider = CreateDefaultSubobject<USphereComponent>(TEXT("InteractCollider"));
-	_Collider->SetupAttachment(this);
+	if(GetOwner())
+	{
+	_Collider->SetupAttachment(GetOwner()->GetRootComponent());
 	_Collider->SetSphereRadius(85.0f);
+	}
 }
 
 void UInteractableComp::BeginPlay()
@@ -37,6 +40,8 @@ void UInteractableComp::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	
 	//UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
 	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
+	if(!Player)
+		return;
 	UInteractComp* InteractorComp = Player->GetInteractComp();
 	if(InteractorComp)
 	{
@@ -48,6 +53,9 @@ void UInteractableComp::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	//UInteractComp* InteractorComp = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
 	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
+	if(!Player)
+		return;
+	
 	UInteractComp* InteractorComp = Player->GetInteractComp();
 	
 	if(InteractorComp)
