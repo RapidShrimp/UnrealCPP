@@ -90,8 +90,6 @@ public:
 	FTimerHandle _DashTimer;
 	int CurrentDashes = _Dashes;
 
-
-
 	
 	void Interact();
 	
