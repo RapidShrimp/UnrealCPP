@@ -29,5 +29,6 @@ public:
 	void AddInteractable(AActor* InterfacedActor);
 	void RemoveInteractable(AActor* InterfacedActor);
 	AActor* GetDesiredInteract();
+	
 	void Interact();
 };

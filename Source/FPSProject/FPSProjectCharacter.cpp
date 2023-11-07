@@ -41,6 +41,7 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 void AFPSProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	OnDashUpdate.Broadcast(CurrentDashes, _Dashes);
 }
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)
@@ -95,6 +96,72 @@ void AFPSProjectCharacter::StopCrouch()
 	UnCrouch();
 }
 
+void AFPSProjectCharacter::Slide()
+{
+	UE_LOG(LogTemp,Error,TEXT("Sliding"));
+}
+
+void AFPSProjectCharacter::Dash()
+{
+	if(CurrentDashes <= 0)
+		return;
+
+	FVector Speed = GetActorForwardVector();
+	Speed.Normalize(0.01f);
+	Speed.Z = 0;
+	LaunchCharacter(Speed * _DashForce,true,false);
+	CurrentDashes-=1;
+	if(_DashTimer.IsValid())
+		GetWorldTimerManager().ClearTimer(_DashTimer);
+
+	
+	GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
+	
+	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
+}
+
+void AFPSProjectCharacter::DashRecharge()
+{
+	CurrentDashes++;
+	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
+	if(CurrentDashes >= _Dashes)
+	{
+		GetWorldTimerManager().ClearTimer(_DashTimer);
+		_DashTimer.Invalidate();
+		CurrentDashes = _Dashes;
+	}
+}
+
+
+
+
+
+void AFPSProjectCharacter::Interact()
+{
+	if(_InteractComp != nullptr)
+	{
+		_InteractComp->Interact();
+	}
+}
+
+
+
+
+
+void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
+{
+	if(!bHasRifle)
+	{
+		MyWeapon = Weapon;
+	}
+	bHasRifle = bNewHasRifle;
+}
+
+bool AFPSProjectCharacter::GetHasRifle()
+{
+	return bHasRifle;
+}
+
 void AFPSProjectCharacter::UseWeapon()
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
@@ -109,30 +176,4 @@ void AFPSProjectCharacter::ReloadWeapon()
 	{
 		IFireable::Execute_Reload(MyWeapon);
 	}
-}
-
-void AFPSProjectCharacter::Dash()
-{
-}
-
-void AFPSProjectCharacter::Interact()
-{
-	if(_InteractComp != nullptr)
-	{
-		_InteractComp->Interact();
-	}
-}
-
-void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
-{
-	if(!bHasRifle)
-	{
-		MyWeapon = Weapon;
-	}
-	bHasRifle = bNewHasRifle;
-}
-
-bool AFPSProjectCharacter::GetHasRifle()
-{
-	return bHasRifle;
 }

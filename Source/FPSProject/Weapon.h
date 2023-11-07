@@ -11,7 +11,8 @@
 #include "InputAction.h"
 #include "Weapon.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate,int,CurrentAmmo,int,ClipSize,int,CurrentClip);
+class UInteractableComp;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateAmmoCountersUpdate, int, CurrentAmmo, int, ClipSize, int, CurrentClip);
 
 class USkeletalMeshComponent;
 class UArrowComponent;
@@ -35,8 +36,8 @@ public:
 	
 	virtual  bool Fire_Implementation() override;
 	virtual  bool Reload_Implementation() override;
-	virtual void Interact_Implementation(AActor* Interacting) override;
-	
+	virtual  void Interact_Implementation(AActor* Interacting) override;
+
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachWeapon(AFPSProjectCharacter* TargetCharacter);
@@ -51,8 +52,6 @@ public:
 	bool AddAmmo(int InAmmo);
 
 protected:
-	
-
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USceneComponent> _Root;
@@ -64,14 +63,14 @@ protected:
 	TObjectPtr<UArrowComponent> _Arrow;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<USphereComponent> _SphereCollider;
+	TObjectPtr<UInteractableComp> _InteractableComp;
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UWeaponType> _TypeData;
-	TObjectPtr<USoundBase> _FireSound;
 
+	TObjectPtr<USoundBase> _FireSound;
 	float _Damage;
 	float _ReloadTime;
 	int _MaxClipSize;
@@ -83,11 +82,6 @@ protected:
 	
 	virtual void BeginPlay() override;
 private:
-	UFUNCTION()
-	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	
 };

@@ -6,9 +6,12 @@
 #include "Blueprint/UserWidget.h"
 #include "WidgetHUD.generated.h"
 
+class UHorizontalBox;
+class UImage;
 /**
  * 
  */
+class UInteractPrompt;
 class UProgressBar;
 class UTextBlock;
 UCLASS(Abstract,BlueprintType)
@@ -21,6 +24,10 @@ public:
 	void UpdateHealth(float newHealthRatio);
 	void UpdateScore(int newScore);
 	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
+
+	bool bDashInit;
+	void InitDash(int Dashes);
+	void UpdateDash(int DashesLeft,int MaxDashes);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;
@@ -29,10 +36,16 @@ private:
 	TObjectPtr<UTextBlock> ScoreText;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInteractPrompt> InteractPrompt ;
+	
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentClipText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MaxClipText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentAmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UHorizontalBox> DashUI;
 	
 };

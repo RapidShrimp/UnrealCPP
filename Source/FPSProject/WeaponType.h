@@ -10,6 +10,7 @@
 /**
  * 
  */
+
 UCLASS(BlueprintType)
 class FPSPROJECT_API UWeaponType : public UDataAsset
 {
@@ -21,7 +22,6 @@ public:
 	TObjectPtr<USkeletalMesh> _WeaponMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> FireSound;
-
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float _Damage;

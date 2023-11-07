@@ -50,8 +50,11 @@ public:
 	TObjectPtr<UInputAction> CrouchAction;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
+	TObjectPtr<UInputAction> SlideAction;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> DashAction;
-
+	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> InteractAction;
 	
@@ -84,7 +87,10 @@ protected:
 	void CallLook(const FInputActionValue& Value);
 	void CallJumpingStart();
 	void CallJumpingEnd();
+	
 	void CallDash();
+	void CallSlide();
+	
 	void CallInteract();
 	
 	void CallFireStart();
@@ -94,6 +100,8 @@ protected:
 	void HandleHealthUpdate(float newHealth,float maxHealth,float healthChange);
 	UFUNCTION()
 	void HandleAmmoCountersUpdate(int CurrentAmmo,int ClipSize,int CurrentClip);
+	UFUNCTION()
+	void HandleDashUpdate(int DashesLeft,int MaxDashes);
 
 public:
 	void AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon);

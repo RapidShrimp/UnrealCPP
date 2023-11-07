@@ -8,6 +8,8 @@
 #include "Weapon.h"
 #include "FPSProjectCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateDashSignature,int,DashesLeft,int,MaxDashes);
+
 class UInteractComp;
 class UHealthComponent;
 class UInputComponent;
@@ -43,8 +45,9 @@ protected:
 
 public:
 	/** Bool for AnimBP to switch to another animation set */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool bHasRifle;
+
+	UPROPERTY(BlueprintAssignable)
+	FUpdateDashSignature OnDashUpdate;
 
 	/** Setter & Getter for bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
@@ -54,10 +57,17 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	bool bHasRifle;
+	
 	TObjectPtr<AWeapon> MyWeapon;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float _DashForce;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int _Dashes = 2;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float _DashChargeRate = 1.0f;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
 		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
@@ -71,7 +81,17 @@ public:
 	void SprintStop();
 	void StartCrouch();
 	void StopCrouch();
+
+	void Slide();
+
+	
 	void Dash();
+	void DashRecharge();
+	FTimerHandle _DashTimer;
+	int CurrentDashes = _Dashes;
+
+
+
 	
 	void Interact();
 	
@@ -85,11 +105,11 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
 	float DefaultFieldOfView = 90;
 	float DefaultWalkSpeed;
-	
-	/** Returns Mesh1P subobject **/
+
+	UHealthComponent* GetHealthComponent() const {return _HealthComponent; }
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	
 };
 
