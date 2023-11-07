@@ -16,15 +16,18 @@ void APController::SetupInputComponent()
 	{
 		if(UEnhancedInputComponent* EIP = CastChecked<UEnhancedInputComponent>(InputComponent))
 		{
-			EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::CallJumpingStart);
-			EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &APController::CallJumpingEnd);
+			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
 			EIP->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APController::CallMove);
 			EIP->BindAction(SprintAction,ETriggerEvent::Triggered, this , &APController::CallSprintStart);
 			EIP->BindAction(SprintAction,ETriggerEvent::Completed, this , &APController::CallSprintEnd);
+			EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::CallJumpingStart);
+			EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &APController::CallJumpingEnd);
 			EIP->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&APController::CallCrouchStart);
 			EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::CallCrouchEnd);
 			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
-			EIP->BindAction(LookAction, ETriggerEvent::Triggered, this, &APController::CallLook);
+			EIP->BindAction(SlideAction,ETriggerEvent::Triggered,this,&APController::CallSlide);
+			
+			
 			EIP->BindAction(InteractAction,ETriggerEvent::Started,this,&APController::CallInteract);
 			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
 			EIP->BindAction(ReloadAction,ETriggerEvent::Triggered,this,&APController::CallReload);
@@ -61,7 +64,6 @@ void APController::BeginPlay()
 	
 	if(_HUDWidgetClass)
 	{
-		UE_LOG(LogTemp,Warning,TEXT("WidgetCreated"));
 		_HUDWidget = CreateWidget<UWidgetHUD,APController*>(this,_HUDWidgetClass.Get());
 		_HUDWidget->AddToViewport();
 	}
@@ -107,11 +109,12 @@ void APController::CallCrouchEnd() {MyPlayerCharacter->StopCrouch();}
 void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
 void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
 void APController::CallDash() {MyPlayerCharacter->Dash();}
-
 void APController::CallSlide()
 {
 	MyPlayerCharacter->Slide();
+
 }
+
 
 void APController::CallInteract() {MyPlayerCharacter->Interact();}
 

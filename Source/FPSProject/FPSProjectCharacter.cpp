@@ -97,7 +97,7 @@ void AFPSProjectCharacter::StopCrouch()
 
 void AFPSProjectCharacter::Slide()
 {
-	
+	UE_LOG(LogTemp,Error,TEXT("Sliding"));
 }
 
 void AFPSProjectCharacter::Dash()
@@ -108,7 +108,6 @@ void AFPSProjectCharacter::Dash()
 	FVector Speed = GetActorForwardVector();
 	Speed.Normalize(0.01f);
 	Speed.Z = 0;
-	UE_LOG(LogTemp,Display,TEXT(" Velocity = X %f , Y %f , Z %f "),Speed.X,Speed.Y,Speed.Z);
 	LaunchCharacter(Speed * _DashForce,true,false);
 	CurrentDashes-=1;
 	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
