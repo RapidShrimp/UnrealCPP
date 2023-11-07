@@ -61,6 +61,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UArrowComponent> _Arrow;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UInteractableComp> _InteractableComp;
 	
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
 

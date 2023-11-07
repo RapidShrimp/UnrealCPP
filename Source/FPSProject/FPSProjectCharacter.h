@@ -91,7 +91,6 @@ public:
 	int CurrentDashes = _Dashes;
 
 
-	void Landed(const FHitResult& Hit) override;
 
 	
 	void Interact();

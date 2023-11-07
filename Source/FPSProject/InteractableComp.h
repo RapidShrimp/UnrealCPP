@@ -10,8 +10,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSetInteractPromptSignature, FStr
 
 class USphereComponent;
 
+//
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FPSPROJECT_API UInteractableComp : public UActorComponent
+class FPSPROJECT_API UInteractableComp : public UPrimitiveComponent
 {
 	GENERATED_BODY()
 
@@ -21,7 +22,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FSetInteractPromptSignature OnSetInteractPrompt;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _Collider;
 
@@ -34,6 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float _InteractSphereSize = 75.0f;
 private:
+
+	virtual void DestroyComponent(bool bPromoteChildren) override;
+	virtual void OnAttachmentChanged() override;
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

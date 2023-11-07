@@ -28,6 +28,9 @@ AWeapon::AWeapon()
 	
 	_Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	_Arrow->SetupAttachment(_SkeletonMesh);
+
+	_InteractableComp = CreateDefaultSubobject<UInteractableComp>(TEXT("Interaction Component"));
+	_InteractableComp->SetupAttachment(_SkeletonMesh);
 }
 
 void AWeapon::Init()
