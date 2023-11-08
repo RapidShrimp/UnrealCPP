@@ -41,6 +41,8 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 void AFPSProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	WallJumpsLeft = WallJumps;
+
 	OnDashUpdate.Broadcast(CurrentDashes, _Dashes);
 }
 
@@ -130,6 +132,111 @@ void AFPSProjectCharacter::DashRecharge()
 		_DashTimer.Invalidate();
 		CurrentDashes = _Dashes;
 	}
+}
+
+
+
+void AFPSProjectCharacter::DoWallRun_Implementation()
+{
+	if(!CanWallRide() || bIsOnWall)
+		return;
+	
+	FHitResult L_Wall = CheckWallInDirection(false);
+	FHitResult R_Wall = CheckWallInDirection(true);
+	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit)
+		return;
+
+	bool OnRightWall = false;
+	FHitResult DesiredWall;
+	
+	if(R_Wall.Distance == 0)
+		DesiredWall = L_Wall;
+	else if(L_Wall.Distance == 0)
+		DesiredWall = R_Wall;
+	else
+	{
+		L_Wall.Distance < R_Wall.Distance ? DesiredWall = L_Wall : DesiredWall = R_Wall;
+	}
+
+	if(DesiredWall.GetActor()==R_Wall.GetActor())
+		OnRightWall = true;
+
+	
+	if(!DesiredWall.GetActor()->ActorHasTag("WallRun"))
+		return;
+
+	UE_LOG(LogTemp,Warning,TEXT("Wall has Tag"));
+	
+	if(!PlayerGrabWall(DesiredWall))
+		return;
+
+	while(bIsOnWall)
+	{
+		FHitResult NewHit = CheckWallInDirection(OnRightWall);
+		if(DesiredWall.GetActor() == NewHit.GetActor())
+		{
+			//Orient Player
+		}
+		else
+		{
+			DetatchFromWall();
+			break;
+		}
+	}
+	
+}
+
+bool AFPSProjectCharacter::CanWallRide()
+{
+	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0)
+		return false;
+	return true;
+}
+
+FHitResult AFPSProjectCharacter::CheckWallInDirection(bool CheckRightWall)
+{
+	FVector Direction;
+	if(CheckRightWall)
+		Direction = GetActorRightVector();
+	else
+		Direction = GetActorRightVector()*-1;
+
+	FHitResult WallHit;
+	FVector StartLoc = GetActorLocation();
+	UKismetSystemLibrary::LineTraceSingle(
+	GetWorld(),
+	StartLoc,
+	StartLoc+Direction *120.0f,
+	UEngineTypes::ConvertToTraceType(ECC_Visibility),
+	true,
+	{},
+	EDrawDebugTrace::ForDuration,
+	WallHit,
+	true,
+	FLinearColor::Red,
+	FLinearColor::Green,
+	5);
+	return WallHit;
+}
+
+bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
+{
+	return true;
+}
+
+void AFPSProjectCharacter::DetatchFromWall()
+{
+	bIsOnWall = false;
+	if(WallJumpsLeft > 0)
+	{
+		//LaunchCharacter() ->Opposite Direction of wall
+	}
+}
+
+void AFPSProjectCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	WallJumpsLeft = 1;
 }
 
 

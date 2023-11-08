@@ -26,7 +26,7 @@ void APController::SetupInputComponent()
 			EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::CallCrouchEnd);
 			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
 			EIP->BindAction(SlideAction,ETriggerEvent::Triggered,this,&APController::CallSlide);
-			
+			EIP->BindAction(WallRideAction,ETriggerEvent::Triggered,this,&APController::CallWallRun);
 			
 			EIP->BindAction(InteractAction,ETriggerEvent::Started,this,&APController::CallInteract);
 			EIP->BindAction(FireAction,ETriggerEvent::Triggered,this,&APController::CallFireStart);
@@ -113,6 +113,11 @@ void APController::CallSlide()
 {
 	MyPlayerCharacter->Slide();
 
+}
+
+void APController::CallWallRun()
+{
+	MyPlayerCharacter->DoWallRun();
 }
 
 

@@ -90,6 +90,31 @@ public:
 	FTimerHandle _DashTimer;
 	int CurrentDashes = _Dashes;
 
+
+	/**
+	 * @brief Wall Run Functionality
+	 * @Param bIsOnWall {Is the player on the wall?}
+	 * @param WallJumpsRemaining {Stores how many times the player can jump off the wall}
+	 */
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int WallJumps =2 ;
+	int WallJumpsLeft;
+	
+	bool bIsOnWall;
+	bool bRightWall;
+	
+	FHitResult CurrentWall;
+	
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void DoWallRun();
+	UFUNCTION(BlueprintPure,BlueprintCallable)
+	bool CanWallRide();
+	FHitResult CheckWallInDirection(bool CheckRightWall);
+	bool PlayerGrabWall(FHitResult Wall);
+	void DetatchFromWall();
+	virtual void Landed(const FHitResult& Hit) override;
+
 	
 	void Interact();
 	
