@@ -100,6 +100,8 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int WallJumps =2 ;
 	int WallJumpsLeft;
+	float WallJumpHeight = 12.5f;
+	float WallJumpDistance = 50;
 	
 	bool bIsOnWall;
 	bool bRightWall;
@@ -113,6 +115,7 @@ public:
 	FHitResult CheckWallInDirection(bool CheckRightWall);
 	bool PlayerGrabWall(FHitResult Wall);
 	void DetatchFromWall();
+	void OnWallLoop();
 	virtual void Landed(const FHitResult& Hit) override;
 
 	

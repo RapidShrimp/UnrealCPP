@@ -143,38 +143,48 @@ void AFPSProjectCharacter::DoWallRun_Implementation()
 	
 	FHitResult L_Wall = CheckWallInDirection(false);
 	FHitResult R_Wall = CheckWallInDirection(true);
-	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit)
+
+	/**
+	 *			-Wall Checks Conditions-
+	 * 0-BothWalls Not Hit -> GTFO of the function
+	 * 1-RightWall Not Hit -> Must Be Left
+	 * 2-LeftWall Not Hit -> Must Be Right
+	 * 3-Both Walls Hit -> Get the Closest
+	 */
+	
+	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-*
 		return;
-
-	bool OnRightWall = false;
+	
 	FHitResult DesiredWall;
+	bRightWall = false;
+
+
 	
-	if(R_Wall.Distance == 0)
+	if(R_Wall.Distance == 0)				//*-1-*
 		DesiredWall = L_Wall;
-	else if(L_Wall.Distance == 0)
+	else if(L_Wall.Distance == 0)			//*-2-*
 		DesiredWall = R_Wall;
-	else
-	{
+	else									//*-3-*
 		L_Wall.Distance < R_Wall.Distance ? DesiredWall = L_Wall : DesiredWall = R_Wall;
-	}
 
-	if(DesiredWall.GetActor()==R_Wall.GetActor())
-		OnRightWall = true;
-
-	
 	if(!DesiredWall.GetActor()->ActorHasTag("WallRun"))
 		return;
+	
+	if(DesiredWall.GetActor()==R_Wall.GetActor())
+		bRightWall = true;
 
 	UE_LOG(LogTemp,Warning,TEXT("Wall has Tag"));
 	
 	if(!PlayerGrabWall(DesiredWall))
 		return;
-
-	while(bIsOnWall)
+	return;
+	
+	/*while(bIsOnWall)
 	{
-		FHitResult NewHit = CheckWallInDirection(OnRightWall);
+		FHitResult NewHit = CheckWallInDirection();
 		if(DesiredWall.GetActor() == NewHit.GetActor())
 		{
+			
 			//Orient Player
 		}
 		else
@@ -182,7 +192,7 @@ void AFPSProjectCharacter::DoWallRun_Implementation()
 			DetatchFromWall();
 			break;
 		}
-	}
+	}*/
 	
 }
 
@@ -221,16 +231,47 @@ FHitResult AFPSProjectCharacter::CheckWallInDirection(bool CheckRightWall)
 
 bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 {
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if(!PlayerController)
+		return false;
+	bIsOnWall = true;
+	
+	GetCharacterMovement()->GravityScale = 0;
+	FVector FaceNormal = (Wall.ImpactPoint + Wall.Normal);
+	PlayerController->PlayerCameraManager->ViewYawMax =  GetActorRotation().Yaw + 30;
+	PlayerController->PlayerCameraManager->ViewYawMin = GetActorRotation().Yaw -30;
+	/*GetFirstPersonCameraComponent()->AddLocalRotation(GetActorRotation());
+	GetFirstPersonCameraComponent()->bUsePawnControlRotation = false;*/
+	//Lerp PlayerPosition to the wall
+	//Detach The Player Camera
+	//Set the Move Direction
 	return true;
 }
 
 void AFPSProjectCharacter::DetatchFromWall()
 {
+	if(!bIsOnWall)
+		return;
 	bIsOnWall = false;
 	if(WallJumpsLeft > 0)
 	{
-		//LaunchCharacter() ->Opposite Direction of wall
+		FVector Speed = GetActorForwardVector();
+		bRightWall ? Speed = GetActorRightVector() *-1 : Speed = GetActorRightVector();
+		Speed.Normalize(0.01f);
+		Speed.X *= WallJumpDistance;
+		Speed.Y *= WallJumpDistance;
+		Speed.Z = 1;
+		LaunchCharacter(Speed * WallJumpHeight,false,true);
 	}
+	GetCharacterMovement()->GravityScale = 1;
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if(!PlayerController)
+		return;
+	PlayerController->PlayerCameraManager->ViewYawMin = 0;
+	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
+		return;
+	//GetFirstPersonCameraComponent()->bUsePawnControlRotation = true;
+
 }
 
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
