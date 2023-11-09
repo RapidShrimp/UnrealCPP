@@ -231,19 +231,25 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if(!PlayerController)
 		return false;
-	bIsOnWall = true;
-
-	//Player Movement Functions
-	GetCharacterMovement()->GravityScale = 0;
-	GetCharacterMovement()->Velocity.Z = 0;
-	//Lerp PlayerPosition to the wall
-	//Set the Move Direction
-
-	//Cameara Functions
+	if (!bIsOnWall)
+	{
+		//Player Movement Functions
+		GetCharacterMovement()->GravityScale = 0;
+		GetCharacterMovement()->Velocity.Z = 0;
+		bIsOnWall = true;
+		WallTilt(bRightWall);
+	}
+	
+	
 	FVector FaceNormal = (Wall.ImpactPoint + Wall.Normal);
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal *50,FColor::Green,false,10,0,4);
+	//Set the Move Direction
+	//Disable Player Movement Whilst on Wall
+	//Make Player Hug Wall
+	
+	//Camera Functions
 	PlayerController->PlayerCameraManager->ViewYawMax =  GetActorRotation().Yaw + 30;
 	PlayerController->PlayerCameraManager->ViewYawMin = GetActorRotation().Yaw -30;
-	WallTilt(bRightWall);
 	return true;
 }
 
@@ -251,8 +257,8 @@ void AFPSProjectCharacter::DetatchFromWall()
 {
 	if(!bIsOnWall)
 		return;
-	bIsOnWall = false;
 	
+	bIsOnWall = false;
 	if(WallJumpsLeft > 0)
 	{
 		FVector Speed = GetActorForwardVector();
@@ -262,6 +268,7 @@ void AFPSProjectCharacter::DetatchFromWall()
 		Speed.Y *= WallJumpDistance;
 		Speed.Z = WallJumpHeight;
 		LaunchCharacter(Speed,false,true);
+		WallJumpsLeft--;
 	}
 	
 	GetCharacterMovement()->GravityScale = 1;
@@ -271,35 +278,26 @@ void AFPSProjectCharacter::DetatchFromWall()
 	PlayerController->PlayerCameraManager->ViewYawMin = 0;
 	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
 	CancelWallTilt();
-		return;
-	//GetFirstPersonCameraComponent()->bUsePawnControlRotation = true;
+
 }
 
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-	WallJumpsLeft = 1;
+	WallJumpsLeft = WallJumps;
 }
 
 
 void AFPSProjectCharacter::Interact()
 {
 	if(_InteractComp != nullptr)
-	{
 		_InteractComp->Interact();
-	}
 }
-
-
-
-
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
 	if(!bHasRifle)
-	{
 		MyWeapon = Weapon;
-	}
 	bHasRifle = bNewHasRifle;
 }
 
@@ -311,15 +309,11 @@ bool AFPSProjectCharacter::GetHasRifle()
 void AFPSProjectCharacter::UseWeapon()
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
-	{
 		IFireable::Execute_Fire(MyWeapon);
-	}
 }
 
 void AFPSProjectCharacter::ReloadWeapon()
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
-	{
 		IFireable::Execute_Reload(MyWeapon);
-	}
 }
