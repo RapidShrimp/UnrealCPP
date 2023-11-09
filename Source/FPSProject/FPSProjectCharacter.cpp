@@ -155,11 +155,8 @@ void AFPSProjectCharacter::DoWallRun_Implementation()
 	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-*
 		return;
 	
-	FHitResult DesiredWall;
 	bRightWall = false;
-
-
-	
+	FHitResult DesiredWall;
 	if(R_Wall.Distance == 0)				//*-1-*
 		DesiredWall = L_Wall;
 	else if(L_Wall.Distance == 0)			//*-2-*
@@ -235,16 +232,18 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	if(!PlayerController)
 		return false;
 	bIsOnWall = true;
-	
+
+	//Player Movement Functions
 	GetCharacterMovement()->GravityScale = 0;
+	GetCharacterMovement()->Velocity.Z = 0;
+	//Lerp PlayerPosition to the wall
+	//Set the Move Direction
+
+	//Cameara Functions
 	FVector FaceNormal = (Wall.ImpactPoint + Wall.Normal);
 	PlayerController->PlayerCameraManager->ViewYawMax =  GetActorRotation().Yaw + 30;
 	PlayerController->PlayerCameraManager->ViewYawMin = GetActorRotation().Yaw -30;
-	/*GetFirstPersonCameraComponent()->AddLocalRotation(GetActorRotation());
-	GetFirstPersonCameraComponent()->bUsePawnControlRotation = false;*/
-	//Lerp PlayerPosition to the wall
-	//Detach The Player Camera
-	//Set the Move Direction
+	WallTilt(bRightWall);
 	return true;
 }
 
@@ -253,6 +252,7 @@ void AFPSProjectCharacter::DetatchFromWall()
 	if(!bIsOnWall)
 		return;
 	bIsOnWall = false;
+	
 	if(WallJumpsLeft > 0)
 	{
 		FVector Speed = GetActorForwardVector();
@@ -260,18 +260,19 @@ void AFPSProjectCharacter::DetatchFromWall()
 		Speed.Normalize(0.01f);
 		Speed.X *= WallJumpDistance;
 		Speed.Y *= WallJumpDistance;
-		Speed.Z = 1;
-		LaunchCharacter(Speed * WallJumpHeight,false,true);
+		Speed.Z = WallJumpHeight;
+		LaunchCharacter(Speed,false,true);
 	}
+	
 	GetCharacterMovement()->GravityScale = 1;
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if(!PlayerController)
 		return;
 	PlayerController->PlayerCameraManager->ViewYawMin = 0;
 	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
+	CancelWallTilt();
 		return;
 	//GetFirstPersonCameraComponent()->bUsePawnControlRotation = true;
-
 }
 
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
