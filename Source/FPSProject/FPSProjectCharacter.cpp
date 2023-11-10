@@ -169,8 +169,6 @@ void AFPSProjectCharacter::DoWallRun_Implementation()
 	
 	if(DesiredWall.GetActor()==R_Wall.GetActor())
 		bRightWall = true;
-
-	UE_LOG(LogTemp,Warning,TEXT("Wall has Tag"));
 	
 	if(!PlayerGrabWall(DesiredWall))
 		return;
@@ -239,10 +237,22 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 		bIsOnWall = true;
 		WallTilt(bRightWall);
 	}
+	float bInvert = 1;
+	if(bRightWall)
+		 bInvert = -1;
+	FVector const FaceNormal = Wall.ImpactPoint + Wall.Normal *50;
+ 	DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormal,FColor::Green,true,10,0,4);
+
+	FVector FaceNormalForward = Wall.ImpactPoint + Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert *50;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormalForward,FColor::Turquoise,false,10,0,4);
+
+	//FVector FaceNormalBack = Wall.ImpactPoint + Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert*50;
+	//DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormalBack,FColor::Red,false,10,0,4);
+
+	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
 	
+	//DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
 	
-	FVector FaceNormal = (Wall.ImpactPoint + Wall.Normal);
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal *50,FColor::Green,false,10,0,4);
 	//Set the Move Direction
 	//Disable Player Movement Whilst on Wall
 	//Make Player Hug Wall
@@ -284,6 +294,7 @@ void AFPSProjectCharacter::DetatchFromWall()
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+	DetatchFromWall();
 	WallJumpsLeft = WallJumps;
 }
 
