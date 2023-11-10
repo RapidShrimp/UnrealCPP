@@ -2,6 +2,7 @@
 
 #include "FPSProjectCharacter.h"
 
+#include "AnimationCoreLibrary.h"
 #include "HealthComponent.h"
 #include "InteractComp.h"
 #include "Animation/AnimInstance.h"
@@ -240,17 +241,20 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	float bInvert = 1;
 	if(bRightWall)
 		 bInvert = -1;
-	FVector const FaceNormal = Wall.ImpactPoint + Wall.Normal *50;
- 	DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormal,FColor::Green,true,10,0,4);
+ 	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
 
-	FVector FaceNormalForward = Wall.ImpactPoint + Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert *50;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormalForward,FColor::Turquoise,false,10,0,4);
+	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert *50;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir,FColor::Turquoise,false,10,0,4);
 
-	//FVector FaceNormalBack = Wall.ImpactPoint + Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert*50;
-	//DrawDebugLine(GetWorld(),Wall.ImpactPoint,FaceNormalBack,FColor::Red,false,10,0,4);
-
-	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
+	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert*50;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir,FColor::Red,false,10,0,4);
 	
+	FVector UpDir =  Wall.Normal.Rotation().Quaternion().GetUpVector()*50;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + UpDir,FColor::Blue,false,10,0,4);
+	
+	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
+	SetActorRotation(ForwardDir.Rotation());
+	//FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
 	//DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
 	
 	//Set the Move Direction
