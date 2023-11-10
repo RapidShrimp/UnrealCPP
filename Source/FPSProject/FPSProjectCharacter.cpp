@@ -2,6 +2,7 @@
 
 #include "FPSProjectCharacter.h"
 
+#include "AITypes.h"
 #include "AnimationCoreLibrary.h"
 #include "HealthComponent.h"
 #include "InteractComp.h"
@@ -238,24 +239,40 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 		bIsOnWall = true;
 		WallTilt(bRightWall);
 	}
+
+	/*Invert the quarternion rotation so that the player will */
 	float bInvert = 1;
 	if(bRightWall)
 		 bInvert = -1;
- 	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
 
-	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert *50;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir,FColor::Turquoise,false,10,0,4);
+	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir * 50 ,FColor::Turquoise,false,10,0,4);
 
-	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert*50;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir,FColor::Red,false,10,0,4);
+	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
+	//DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
+
+	// Dot Product to See if the players velocity is going same direction
+
+
 	
-	FVector UpDir =  Wall.Normal.Rotation().Quaternion().GetUpVector()*50;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + UpDir,FColor::Blue,false,10,0,4);
+	/*
+	-------------------[Debug For Line Traces (Using Quaternions, May need these later)]-------------------
+
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
+
+	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir * 50,FColor::Red,false,10,0,4);
+	
+	FVector UpDir =  Wall.Normal.Rotation().Quaternion().GetUpVector();
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + UpDir * 50,FColor::Blue,false,10,0,4);
+	
+	-------------------------------------------------------------------------------------------------------
+	*/
+	
 	
 	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
-	SetActorRotation(ForwardDir.Rotation());
-	//FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
-	//DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
+	SetActorRotation(FRotator{0,ForwardDir.Rotation().Yaw,0});
+	
 	
 	//Set the Move Direction
 	//Disable Player Movement Whilst on Wall
