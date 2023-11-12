@@ -32,8 +32,8 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+	
 	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	
 	_HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HeatlhComp"));
@@ -50,28 +50,19 @@ void AFPSProjectCharacter::BeginPlay()
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
+	if(bMovementLocked)
+		return;
+	
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add movement 
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
-	}
+	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+	AddMovementInput(GetActorRightVector(), MovementVector.X);
 }
 
 void AFPSProjectCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
 }
 
 void AFPSProjectCharacter::SprintStart()
@@ -138,27 +129,37 @@ void AFPSProjectCharacter::DashRecharge()
 
 
 
-void AFPSProjectCharacter::DoWallRun_Implementation()
+void AFPSProjectCharacter::WallRun_Implementation()
 {
-	if(!CanWallRide() || bIsOnWall)
+
+	/*			-Wall Checks Conditions-
+	 * 0-BothWalls Not Hit -> GTFO of the function & Set Current Wall False
+	 * 1-RightWall Not Hit -> Must Be Left
+	 * 2-LeftWall Not Hit -> Must Be Right
+	 * 3-Both Walls Hit -> Get the Closest
+	 * 
+	 * 4-Is Desired the Current Wall
+	 *		4a Is Wall Forward Vec same?
+	 *		4 YES -> return
+	 *		4 No -> Rotate Player
+	 */
+	
+	if(!PlayerCanWallRide())
 		return;
 	
 	FHitResult L_Wall = CheckWallInDirection(false);
 	FHitResult R_Wall = CheckWallInDirection(true);
-
-	/**
-	 *			-Wall Checks Conditions-
-	 * 0-BothWalls Not Hit -> GTFO of the function
-	 * 1-RightWall Not Hit -> Must Be Left
-	 * 2-LeftWall Not Hit -> Must Be Right
-	 * 3-Both Walls Hit -> Get the Closest
-	 */
-	
-	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-*
-		return;
-	
-	bRightWall = false;
 	FHitResult DesiredWall;
+
+
+	
+	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-* 
+	{
+		CurrentWall = DesiredWall;
+		DetatchFromWall();
+		return;
+	} 
+	
 	if(R_Wall.Distance == 0)				//*-1-*
 		DesiredWall = L_Wall;
 	else if(L_Wall.Distance == 0)			//*-2-*
@@ -169,33 +170,46 @@ void AFPSProjectCharacter::DoWallRun_Implementation()
 	if(!DesiredWall.GetActor()->ActorHasTag("WallRun"))
 		return;
 	
+	// Dot Product to See if the players velocity is going same direction
+	/*
+	FVector ForwardDir = GetVelocity();
+	ForwardDir.Normalize();
+	if(FVector::DotProduct(ForwardDir,GetWallForwardVector(DesiredWall)) < 0.7f)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("NOT LOOKING SAME DIR"));
+		return;
+	}
+	 */
+	
+	
 	if(DesiredWall.GetActor()==R_Wall.GetActor())
 		bRightWall = true;
+	else
+		bRightWall = false;
+
 	
-	if(!PlayerGrabWall(DesiredWall))
-		return;
-	return;
-	
-	/*while(bIsOnWall)
+	if(DesiredWall.GetActor() == CurrentWall.GetActor())
 	{
-		FHitResult NewHit = CheckWallInDirection();
-		if(DesiredWall.GetActor() == NewHit.GetActor())
-		{
-			
-			//Orient Player
-		}
-		else
-		{
-			DetatchFromWall();
-			break;
-		}
-	}*/
-	
+		PlayerGrabWall(DesiredWall);
+		RotateTowardsForward(GetWallForwardVector(DesiredWall));
+	}
+	else
+		PlayerGrabWall(DesiredWall);
 }
 
-bool AFPSProjectCharacter::CanWallRide()
+void AFPSProjectCharacter::WhileOnWall()
 {
-	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0)
+
+}
+
+
+
+bool AFPSProjectCharacter::PlayerCanWallRide()
+{
+	//Is Falling & Has Wall Jumps -> return true
+	if(bIsOnWall)
+		return true;
+	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0) 
 		return false;
 	return true;
 }
@@ -231,6 +245,7 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if(!PlayerController)
 		return false;
+	
 	if (!bIsOnWall)
 	{
 		//Player Movement Functions
@@ -239,41 +254,9 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 		bIsOnWall = true;
 		WallTilt(bRightWall);
 	}
-
-	/*Invert the quarternion rotation so that the player will */
-	float bInvert = 1;
-	if(bRightWall)
-		 bInvert = -1;
-
-	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 *bInvert;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir * 50 ,FColor::Turquoise,false,10,0,4);
-
-	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
-	//DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
-
-	// Dot Product to See if the players velocity is going same direction
-
-
-	
-	/*
-	-------------------[Debug For Line Traces (Using Quaternions, May need these later)]-------------------
-
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
-
-	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir * 50,FColor::Red,false,10,0,4);
-	
-	FVector UpDir =  Wall.Normal.Rotation().Quaternion().GetUpVector();
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + UpDir * 50,FColor::Blue,false,10,0,4);
-	
-	-------------------------------------------------------------------------------------------------------
-	*/
-	
-	
-	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
-	SetActorRotation(FRotator{0,ForwardDir.Rotation().Yaw,0});
-	
-	
+	bMovementLocked = true;
+	CurrentWall = Wall;
+	RotateTowardsForward(GetWallForwardVector(Wall));
 	//Set the Move Direction
 	//Disable Player Movement Whilst on Wall
 	//Make Player Hug Wall
@@ -284,11 +267,51 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	return true;
 }
 
+FVector AFPSProjectCharacter::GetWallForwardVector(FHitResult Wall)
+{
+	/*Invert the quarternion rotation so that the player will alway have a forward */
+	int Invert = 1;
+	if(bRightWall)
+		Invert = -1;
+
+	const FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 * Invert;
+	return ForwardDir;
+
+	
+	/*
+	-------------------[Debug For Line Traces (Using Quaternions, May need these later)]-------------------
+
+	//Wall Normal
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
+
+	//Forward
+	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 * Invert;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir * 50 ,FColor::Turquoise,false,10,0,4);
+	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
+
+	//Back
+	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir * 50,FColor::Red,false,10,0,4);
+
+	//Up
+	FVector UpDir =  Wall.Normal.Rotation().Quaternion().GetUpVector();
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + UpDir * 50,FColor::Blue,false,10,0,4);
+
+	//Player
+	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
+
+	-------------------------------------------------------------------------------------------------------
+	*/
+	
+}
+
+
 void AFPSProjectCharacter::DetatchFromWall()
 {
 	if(!bIsOnWall)
 		return;
-	
+	bMovementLocked = false;
 	bIsOnWall = false;
 	if(WallJumpsLeft > 0)
 	{
@@ -301,15 +324,16 @@ void AFPSProjectCharacter::DetatchFromWall()
 		LaunchCharacter(Speed,false,true);
 		WallJumpsLeft--;
 	}
-	
+
 	GetCharacterMovement()->GravityScale = 1;
+
+	//Reset Camera to the Defaults
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if(!PlayerController)
 		return;
 	PlayerController->PlayerCameraManager->ViewYawMin = 0;
 	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
 	CancelWallTilt();
-
 }
 
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)

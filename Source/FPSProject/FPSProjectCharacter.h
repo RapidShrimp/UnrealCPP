@@ -76,6 +76,9 @@ public:
 
 	//Movement Functions
 	void Move(const FInputActionValue& Value);
+	bool bMovementLocked = false;
+
+	
 	void Look(const FInputActionValue& Value);
 	void SprintStart();
 	void SprintStop();
@@ -105,19 +108,36 @@ public:
 	float WallJumpHeight = 400;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float WallJumpDistance = 600;
-	
+
+
 	bool bIsOnWall;
 	bool bRightWall;
-	
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	FHitResult CurrentWall;
-	
+
+	//Wall Main Functions
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	void DoWallRun();
+	void WallRun();
+	void WhileOnWall();
+	
+	//Wall Checks
 	UFUNCTION(BlueprintPure,BlueprintCallable)
-	bool CanWallRide();
+	bool PlayerCanWallRide();
 	FHitResult CheckWallInDirection(bool CheckRightWall);
+
+	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RotateTowardsForward(FVector WallForward);
+	UFUNCTION(BlueprintPure,BlueprintCallable)
+	FVector GetWallForwardVector(FHitResult Wall);
+
+	//Player Grabbing Functionality
 	bool PlayerGrabWall(FHitResult Wall);
 	void DetatchFromWall();
+
+	//Camera Functions
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void WallTilt(bool OnRightWall);
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
