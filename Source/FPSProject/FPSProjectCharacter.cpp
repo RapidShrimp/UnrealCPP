@@ -36,16 +36,16 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 	
 	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	
-	_HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HeatlhComp"));
-	_InteractComp = CreateDefaultSubobject<UInteractComp>(TEXT("InteractComp"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HeatlhComp"));
+	InteractComp = CreateDefaultSubobject<UInteractComp>(TEXT("InteractComp"));
 }
 
 void AFPSProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	WallJumpsLeft = WallJumps;
-
-	OnDashUpdate.Broadcast(CurrentDashes, _Dashes);
+	DefaultHeight = GetDefaultHalfHeight();
+	OnDashUpdate.Broadcast(CurrentDashes, Dashes);
 }
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)
@@ -80,20 +80,22 @@ void AFPSProjectCharacter::SprintStop()
 	LerpCamFOV(DefaultFieldOfView,GetFirstPersonCameraComponent()->FieldOfView);
 }
 
-void AFPSProjectCharacter::StartCrouch()
+void AFPSProjectCharacter::StartCrouch_Implementation()
 {
-	SprintStop();
 	Crouch();
+	SprintStop();
+	GetCharacterMovement()-> MaxWalkSpeed *= 0.6;
 }
 
-void AFPSProjectCharacter::StopCrouch()
+void AFPSProjectCharacter::StopCrouch_Implementation()
 {
 	UnCrouch();
+	GetCharacterMovement()-> MaxWalkSpeed = DefaultWalkSpeed;
 }
 
 void AFPSProjectCharacter::Slide()
 {
-	UE_LOG(LogTemp,Error,TEXT("Sliding"));
+	UE_LOG(LogTemp,Display,TEXT("Sliding"));
 }
 
 void AFPSProjectCharacter::Dash()
@@ -104,30 +106,30 @@ void AFPSProjectCharacter::Dash()
 	FVector Speed = GetActorForwardVector();
 	Speed.Normalize(0.01f);
 	Speed.Z = 0;
-	LaunchCharacter(Speed * _DashForce,true,false);
+	LaunchCharacter(Speed * DashForce,true,false);
 	CurrentDashes-=1;
-	if(_DashTimer.IsValid())
-		GetWorldTimerManager().ClearTimer(_DashTimer);
-	GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
+	if(DashTimer.IsValid())
+		GetWorldTimerManager().ClearTimer(DashTimer);
+	GetWorld()->GetTimerManager().SetTimer(DashTimer,this,&AFPSProjectCharacter::DashRecharge,DashChargeRate,true);
 	
-	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
+	OnDashUpdate.Broadcast(CurrentDashes,Dashes);
 }
 
 void AFPSProjectCharacter::DashRecharge()
 {
 	CurrentDashes++;
-	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
-	if(CurrentDashes >= _Dashes)
+	OnDashUpdate.Broadcast(CurrentDashes,Dashes);
+	if(CurrentDashes >= Dashes)
 	{
-		GetWorldTimerManager().ClearTimer(_DashTimer);
-		_DashTimer.Invalidate();
-		CurrentDashes = _Dashes;
+		GetWorldTimerManager().ClearTimer(DashTimer);
+		DashTimer.Invalidate();
+		CurrentDashes = Dashes;
 	}
 }
 
 
 
-void AFPSProjectCharacter::WallRun_Implementation()
+void AFPSProjectCharacter::WallRun()
 {
 
 	/*			-Wall Checks Conditions-
@@ -154,7 +156,7 @@ void AFPSProjectCharacter::WallRun_Implementation()
 	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-* 
 	{
 		CurrentWall = DesiredWall;
-		DetatchFromWall();
+		DetachFromWall(false);
 		return;
 	} 
 	
@@ -166,7 +168,10 @@ void AFPSProjectCharacter::WallRun_Implementation()
 		L_Wall.Distance < R_Wall.Distance ? DesiredWall = L_Wall : DesiredWall = R_Wall;
 
 	if(!DesiredWall.GetActor()->ActorHasTag("WallRun"))
+	{
+		DetachFromWall(false);
 		return;
+	}
 	
 	// Dot Product to See if the players velocity is going same direction
 	/*
@@ -178,7 +183,6 @@ void AFPSProjectCharacter::WallRun_Implementation()
 		return;
 	}
 	 */
-	
 	
 	if(DesiredWall.GetActor()==R_Wall.GetActor())
 		bRightWall = true;
@@ -195,23 +199,17 @@ void AFPSProjectCharacter::WallRun_Implementation()
 		PlayerGrabWall(DesiredWall);
 }
 
-void AFPSProjectCharacter::WhileOnWall()
-{
-
-}
-
-
-
 bool AFPSProjectCharacter::PlayerCanWallRide()
 {
 	//Is Falling & Has Wall Jumps -> return true
 	if(bIsOnWall)
 		return true;
-	PlayerSpeed = GetVelocity().Length();
-	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0||PlayerSpeed < 520.0f) 
+	PlayerSpeed = FVector::DotProduct(GetVelocity(),GetActorForwardVector());
+	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0||PlayerSpeed < PlayerMinWallRunSpeed) 
 		return false;
 	return true;
 }
+
 
 FHitResult AFPSProjectCharacter::CheckWallInDirection(bool CheckRightWall)
 {
@@ -230,7 +228,7 @@ FHitResult AFPSProjectCharacter::CheckWallInDirection(bool CheckRightWall)
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),
 	true,
 	{},
-	EDrawDebugTrace::ForDuration,
+	EDrawDebugTrace::None,
 	WallHit,
 	true,
 	FLinearColor::Red,
@@ -248,17 +246,17 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	if (!bIsOnWall)
 	{
 		//Player Movement Functions
-		GetCharacterMovement()->GravityScale = 0;
-		GetCharacterMovement()->Velocity.Z = 0;
+		GetCharacterMovement()->GravityScale = 0.15;
+		if(GetCharacterMovement()->Velocity.Z> 0)
+			GetCharacterMovement()->Velocity.Z /= 2;
+		else
+			GetCharacterMovement()->Velocity.Z = 0;
 		bIsOnWall = true;
 		WallTilt(bRightWall);
 	}
 	bMovementLocked = true;
 	CurrentWall = Wall;
 	RotateTowardsForward(GetWallForwardVector(Wall));
-	//Disable Player Movement Whilst on Wall
-	//Make Player Hug Wall
-	
 	//Camera Functions
 	PlayerController->PlayerCameraManager->ViewYawMax =  GetActorRotation().Yaw + 30;
 	PlayerController->PlayerCameraManager->ViewYawMin = GetActorRotation().Yaw -30;
@@ -274,7 +272,6 @@ FVector AFPSProjectCharacter::GetWallForwardVector(FHitResult Wall)
 
 	const FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 * Invert;
 	return ForwardDir;
-
 	
 	/*
 	-------------------[Debug For Line Traces (Using Quaternions, May need these later)]-------------------
@@ -304,14 +301,13 @@ FVector AFPSProjectCharacter::GetWallForwardVector(FHitResult Wall)
 	
 }
 
-
-void AFPSProjectCharacter::DetatchFromWall()
+void AFPSProjectCharacter::DetachFromWall(bool bWallJump)
 {
 	if(!bIsOnWall)
 		return;
 	bMovementLocked = false;
 	bIsOnWall = false;
-	if(WallJumpsLeft > 0)
+	if(WallJumpsLeft > 0 && bWallJump)
 	{
 		FVector Speed = GetActorForwardVector();
 		bRightWall ? Speed = GetActorRightVector() *-1 : Speed = GetActorRightVector();
@@ -337,15 +333,14 @@ void AFPSProjectCharacter::DetatchFromWall()
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-	DetatchFromWall();
+	DetachFromWall(false);
 	WallJumpsLeft = WallJumps;
 }
 
-
-void AFPSProjectCharacter::Interact()
+void AFPSProjectCharacter::Interact() const
 {
-	if(_InteractComp != nullptr)
-		_InteractComp->Interact();
+	if(InteractComp != nullptr)
+		InteractComp->Interact();
 }
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
@@ -360,13 +355,13 @@ bool AFPSProjectCharacter::GetHasRifle()
 	return bHasRifle;
 }
 
-void AFPSProjectCharacter::UseWeapon()
+void AFPSProjectCharacter::UseWeapon() const
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
 		IFireable::Execute_Fire(MyWeapon);
 }
 
-void AFPSProjectCharacter::ReloadWeapon()
+void AFPSProjectCharacter::ReloadWeapon() const
 {
 	if(bHasRifle && UKismetSystemLibrary::DoesImplementInterface(MyWeapon,UFireable::StaticClass()))
 		IFireable::Execute_Reload(MyWeapon);

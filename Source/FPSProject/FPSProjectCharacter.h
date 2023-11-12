@@ -24,144 +24,132 @@ UCLASS(config=Game)
 class AFPSProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+	
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UHealthComponent> _HealthComponent;
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInteractComp> _InteractComp;
+	TObjectPtr<UInteractComp> InteractComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
 	
 public:
 	AFPSProjectCharacter();
-
-protected:
-	virtual void BeginPlay();
-
-public:
-	/** Bool for AnimBP to switch to another animation set */
-
+	
 	UPROPERTY(BlueprintAssignable)
 	FUpdateDashSignature OnDashUpdate;
-
-	/** Setter & Getter for bool */
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetRifle(bool bNewHasRifle,AWeapon* Weapon);
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	bool GetHasRifle();
-
+	
 protected:
+	virtual void BeginPlay();
+	virtual void Landed(const FHitResult& Hit) override;
 
+	//Movement Variables
+	bool bMovementLocked = false;
+	bool bIsOnWall;
+	bool bRightWall;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	float CrouchHeight;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	float DefaultHeight;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
+	float PlayerSpeed;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
+	float PlayerMinWallRunSpeed = 520.0f;
+	float DefaultWalkSpeed;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="Dash")
+	float DashForce = 400;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="Dash")
+	int Dashes = 2;
+	int CurrentDashes = Dashes;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="Dash")
+	float DashChargeRate = 1.0f;
+	FTimerHandle DashTimer;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Camera);
+	float DefaultFieldOfView = 90;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "WallRun")
+	int WallJumps =3;
+	int WallJumpsLeft;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "WallRun")
+	float WallJumpHeight = 400;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "WallRun")
+	float WallJumpDistance = 600;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
+	FHitResult CurrentWall;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
 	
 	TObjectPtr<AWeapon> MyWeapon;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float _DashForce;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int _Dashes = 2;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float _DashChargeRate = 1.0f;
-	
+	//Functions
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
-		void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
+	void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
 
 public:
 
 	//Movement Functions
 	void Move(const FInputActionValue& Value);
-	bool bMovementLocked = false;
-
-	
 	void Look(const FInputActionValue& Value);
 	void SprintStart();
 	void SprintStop();
+	UFUNCTION(BlueprintNativeEvent)
 	void StartCrouch();
+	UFUNCTION(BlueprintNativeEvent)
 	void StopCrouch();
-
 	void Slide();
-
-	
 	void Dash();
 	void DashRecharge();
-	FTimerHandle _DashTimer;
-	int CurrentDashes = _Dashes;
 
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	void SetRifle(bool bNewHasRifle,AWeapon* Weapon);
 
-	/**
-	 * @brief Wall Run Functionality
-	 * @Param bIsOnWall {Is the player on the wall?}
-	 * @param WallJumpsRemaining {Stores how many times the player can jump off the wall}
-	 */
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int WallJumps =2 ;
-	int WallJumpsLeft;
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	bool GetHasRifle();
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float WallJumpHeight = 400;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float WallJumpDistance = 600;
+	void Interact() const;
+	AWeapon* GetWeapon() const {return MyWeapon;}
+	void UseWeapon() const;
+	void ReloadWeapon() const;
 
-
-	bool bIsOnWall;
-	bool bRightWall;
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	float PlayerSpeed;
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	FHitResult CurrentWall;
-
-	//Wall Main Functions
-	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void WallRun();
-	void WhileOnWall();
-	
-	//Wall Checks
-	UFUNCTION(BlueprintPure,BlueprintCallable)
-	bool PlayerCanWallRide();
+	void DetachFromWall(bool bWallJump);
+
+protected:
 	FHitResult CheckWallInDirection(bool CheckRightWall);
-
-	
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void RotateTowardsForward(FVector WallForward);
-	UFUNCTION(BlueprintPure,BlueprintCallable)
-	FVector GetWallForwardVector(FHitResult Wall);
-
-	//Player Grabbing Functionality
 	bool PlayerGrabWall(FHitResult Wall);
-	void DetatchFromWall();
-
+	
+	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
+	bool PlayerCanWallRide();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
+	void RotateTowardsForward(FVector WallForward);
+	
+	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
+	FVector GetWallForwardVector(FHitResult Wall);
+	
 	//Camera Functions
-	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
 	void WallTilt(bool OnRightWall);
-	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
 	void CancelWallTilt();
-	
-	virtual void Landed(const FHitResult& Hit) override;
 
-	
-	void Interact();
-	
-	//Interface Weapon Calls
-	AWeapon* GetWeapon(){return MyWeapon;}
-	UInteractComp* GetInteractComp(){return _InteractComp;}
-	
-	void UseWeapon();
-	void ReloadWeapon();
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input);
-	float DefaultFieldOfView = 90;
-	float DefaultWalkSpeed;
-
-	UHealthComponent* GetHealthComponent() const {return _HealthComponent; }
+public:	
+	UInteractComp* GetInteractComp() const {return InteractComp;}
+	UHealthComponent* GetHealthComponent() const {return HealthComponent; }
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 

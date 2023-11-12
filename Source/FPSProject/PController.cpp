@@ -114,7 +114,7 @@ void APController::CallDash() {MyPlayerCharacter->Dash();}
 void APController::CallSlide() {MyPlayerCharacter->Slide();}
 
 void APController::CallWallRun() {MyPlayerCharacter->WallRun();}
-void APController::CancelWallRun() {MyPlayerCharacter->DetatchFromWall();}
+void APController::CancelWallRun() {MyPlayerCharacter->DetachFromWall(true);}
 
 void APController::CallInteract() {MyPlayerCharacter->Interact();}
 
