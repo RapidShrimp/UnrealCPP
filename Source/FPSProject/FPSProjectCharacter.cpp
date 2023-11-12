@@ -98,9 +98,9 @@ void AFPSProjectCharacter::Slide()
 
 void AFPSProjectCharacter::Dash()
 {
-	if(CurrentDashes <= 0)
+	if(bMovementLocked || CurrentDashes <= 0)
 		return;
-
+	
 	FVector Speed = GetActorForwardVector();
 	Speed.Normalize(0.01f);
 	Speed.Z = 0;
@@ -108,8 +108,6 @@ void AFPSProjectCharacter::Dash()
 	CurrentDashes-=1;
 	if(_DashTimer.IsValid())
 		GetWorldTimerManager().ClearTimer(_DashTimer);
-
-	
 	GetWorld()->GetTimerManager().SetTimer(_DashTimer,this,&AFPSProjectCharacter::DashRecharge,_DashChargeRate,true);
 	
 	OnDashUpdate.Broadcast(CurrentDashes,_Dashes);
@@ -151,7 +149,7 @@ void AFPSProjectCharacter::WallRun_Implementation()
 	FHitResult R_Wall = CheckWallInDirection(true);
 	FHitResult DesiredWall;
 
-
+	
 	
 	if(!L_Wall.bBlockingHit && !R_Wall.bBlockingHit) //*-0-* 
 	{
@@ -209,7 +207,8 @@ bool AFPSProjectCharacter::PlayerCanWallRide()
 	//Is Falling & Has Wall Jumps -> return true
 	if(bIsOnWall)
 		return true;
-	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0) 
+	PlayerSpeed = GetVelocity().Length();
+	if(!GetMovementComponent()->IsFalling()|| WallJumpsLeft <= 0||PlayerSpeed < 520.0f) 
 		return false;
 	return true;
 }
@@ -257,7 +256,6 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	bMovementLocked = true;
 	CurrentWall = Wall;
 	RotateTowardsForward(GetWallForwardVector(Wall));
-	//Set the Move Direction
 	//Disable Player Movement Whilst on Wall
 	//Make Player Hug Wall
 	

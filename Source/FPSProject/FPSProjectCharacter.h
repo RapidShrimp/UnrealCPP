@@ -112,6 +112,8 @@ public:
 
 	bool bIsOnWall;
 	bool bRightWall;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	float PlayerSpeed;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	FHitResult CurrentWall;
