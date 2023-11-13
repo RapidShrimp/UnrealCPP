@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
 	float PlayerMinWallRunSpeed = 520.0f;
 	float DefaultWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
+	float WallRunGravityScale = 0.2f;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="Dash")
 	float DashForce = 400;
