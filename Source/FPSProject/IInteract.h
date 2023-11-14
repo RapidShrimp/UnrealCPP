@@ -6,11 +6,6 @@
 #include "UObject/Object.h"
 #include "IInteract.generated.h"
 
-/**
- * 
- */
-
-
 class UInteractableComp;
 
 UINTERFACE()
@@ -30,7 +25,6 @@ protected:
 public:
 	bool GetCanInteract(){return bCanInteract;}
 	void SetCanInteract(bool Interactibility) {bCanInteract = Interactibility;}
-	
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void Interact(AActor* Interacting);
 };

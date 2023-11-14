@@ -28,6 +28,9 @@ public:
 	bool bDashInit;
 	void InitDash(int Dashes);
 	void UpdateDash(int DashesLeft,int MaxDashes);
+
+	void InteractPromptHide();
+	void SetInteractPrompt(FString NewInteractText, FLinearColor NewColour, float NewInteractTime);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthBar;

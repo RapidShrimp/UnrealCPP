@@ -27,13 +27,14 @@ void UInteractComp::BeginPlay()
 
 void UInteractComp::AddInteractable(AActor* InteractionActor)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Added %s"),*InteractionActor->GetName() )
 	InteractableList.AddUnique(InteractionActor);
+	GetWorld()->GetTimerManager().SetTimer(UpdateTimer,this,&UInteractComp::ShowInteract,0.1f,true);
 }
 
 void UInteractComp::RemoveInteractable(AActor* InteractionActor)
 {
 	InteractableList.Remove(InteractionActor);
+	UE_LOG(LogTemp,Warning,TEXT("Removed"))
 }
 
 AActor* UInteractComp::GetDesiredInteract()
@@ -46,16 +47,38 @@ AActor* UInteractComp::GetDesiredInteract()
 	{},EDrawDebugTrace::None,Hit,true,FLinearColor::Blue,FLinearColor::Green);
 
 	float PreviousDistance = 1000;
-	AActor* DesiredInteractalbe = nullptr;
+	AActor* Desired = nullptr;
 	for(int i = 0; i < InteractableList.Num(); i++)
 	{
 		if(FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation())<PreviousDistance) //Get the distance from hit location to the 
 			{
 			PreviousDistance = FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation());
-			DesiredInteractalbe = InteractableList[i];
+			Desired= InteractableList[i];
 			} 
 	}
-	return DesiredInteractalbe;
+	return Desired;
+}
+
+void UInteractComp::ShowInteract()
+{
+	if(InteractableList.Num() == 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(UpdateTimer);
+		CurrentSelected = nullptr;
+		OnNoInteract.Broadcast();
+		return;
+	}
+	AActor* TestActor = GetDesiredInteract();
+	if(TestActor == nullptr || TestActor == CurrentSelected)
+	{
+		OnNoInteract.Broadcast();
+		return;
+	}
+	
+	UInteractableComp* Interaction = TestActor->FindComponentByClass<UInteractableComp>();
+	if(!Interaction)
+		return;
+	OnSetInteractPrompt.Broadcast(Interaction->InteractText,Interaction->InteractColour,Interaction->InteractTime);
 }
 
 void UInteractComp::Interact()

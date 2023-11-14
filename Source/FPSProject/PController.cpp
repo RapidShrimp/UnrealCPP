@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "FPSProjectCharacter.h"
 #include "HealthComponent.h"
+#include "InteractComp.h"
 #include "WidgetHUD.h"
 
 void APController::SetupInputComponent()
@@ -37,6 +38,16 @@ void APController::SetupInputComponent()
 		}
 
 	}
+}
+
+void APController::SetInteractPrompt(FString NewInteractText, FLinearColor NewColour, float NewInteractTime)
+{
+	_HUDWidget->SetInteractPrompt(NewInteractText,NewColour,NewInteractTime);
+}
+
+void APController::NoInteractPrompt()
+{
+	_HUDWidget->InteractPromptHide();
 }
 
 void APController::HandleHealthUpdate(float newHealth,float maxHealth,float healthChange)
@@ -76,6 +87,12 @@ void APController::BeginPlay()
 	}
 	if(MyPlayerCharacter)
 		MyPlayerCharacter->OnDashUpdate.AddUniqueDynamic(this,&APController::HandleDashUpdate);
+	if(MyPlayerCharacter->GetInteractComp())
+	{
+		MyPlayerCharacter->GetInteractComp()->OnSetInteractPrompt.AddUniqueDynamic(this,&APController::SetInteractPrompt);
+		MyPlayerCharacter->GetInteractComp()->OnNoInteract.AddUniqueDynamic(this,&APController::NoInteractPrompt);
+
+	}
 }
 
 void APController::AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon)

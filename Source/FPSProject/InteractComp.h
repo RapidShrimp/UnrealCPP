@@ -6,8 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "InteractComp.generated.h"
 
-
+class UInteractableComp;
 class AFPSProjectCharacter;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoInteractsSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSetInteractPromptSignature, FString, newInteractText, FLinearColor, newColour,float, newInteractTime);
+
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FPSPROJECT_API UInteractComp : public UActorComponent
@@ -22,13 +26,21 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-
-	//Interact Functions
-	TArray<AActor*> InteractableList;
-	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
+	UPROPERTY(BlueprintAssignable)
+	FNoInteractsSignature OnNoInteract;
+	
+	UPROPERTY(BlueprintAssignable)
+	FSetInteractPromptSignature OnSetInteractPrompt;
+	
 	void AddInteractable(AActor* InterfacedActor);
 	void RemoveInteractable(AActor* InterfacedActor);
-	AActor* GetDesiredInteract();
-	
 	void Interact();
+	//Interact Functions
+protected:
+	TArray<TObjectPtr<AActor>> InteractableList;
+	TObjectPtr<AActor> CurrentSelected;
+	FTimerHandle UpdateTimer;
+	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
+	AActor* GetDesiredInteract();
+	void ShowInteract();
 };

@@ -58,11 +58,11 @@ void AWeapon::Interact_Implementation(AActor* Interacting)
 	{
 		if(Player->GetHasRifle())
 		{
-		Player->GetWeapon()->DropWeapon();
+			Player->GetWeapon()->DropWeapon();
 		}
 		AttachWeapon(Player);
 		UE_LOG(LogTemp,Warning,TEXT("Interacted"))
-
+		
 	}
 	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 }
@@ -76,6 +76,7 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 		return;
 	}
 	
+	_InteractableComp->SetCanInteract(false);
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules const AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -89,7 +90,6 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 		SetInstigator(OwningCharacter);
 		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	}
-	
 }
 
 void AWeapon::DropWeapon()
@@ -99,6 +99,7 @@ void AWeapon::DropWeapon()
 		return;
 	}
 	
+	SetCanInteract(true);
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
 		PlayerController->RemoveWeaponMappings(this); 

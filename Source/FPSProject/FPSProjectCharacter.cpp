@@ -327,9 +327,13 @@ void AFPSProjectCharacter::Interact() const
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
-	if(!bHasRifle)
-		MyWeapon = Weapon;
+	if(bHasRifle)
+	{
+		InteractComp->AddInteractable(MyWeapon);
+	}
+	MyWeapon = Weapon;
 	bHasRifle = bNewHasRifle;
+	InteractComp->RemoveInteractable(Weapon);
 }
 
 bool AFPSProjectCharacter::GetHasRifle()

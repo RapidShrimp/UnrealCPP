@@ -70,7 +70,10 @@ public:
 	virtual void SetupInputComponent() override;
 
 protected:
-	
+	UFUNCTION()
+	void SetInteractPrompt(FString NewInteractText, FLinearColor NewColour, float NewInteractTime);
+	UFUNCTION()
+	void NoInteractPrompt();
 	virtual void BeginPlay() override;
 
 	TObjectPtr<AFPSProjectCharacter> MyPlayerCharacter;
