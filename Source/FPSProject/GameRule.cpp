@@ -18,7 +18,7 @@ void UGameRule::Init()
 void UGameRule::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Init();
 }
 
 void UGameRule::BroadcastGameRuleComplete()
