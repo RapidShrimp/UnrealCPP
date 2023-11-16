@@ -155,7 +155,5 @@ public:
 	UHealthComponent* GetHealthComponent() const {return HealthComponent; }
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
-	
 };
 

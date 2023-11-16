@@ -64,23 +64,15 @@ void UInteractableComp::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 {
 	if(!bCanInteract)
 		return;
-	
-	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
-	if(!Player)
-		return;
-	UInteractComp* InteractorComp = Player->GetInteractComp();
+	UInteractComp* InteractorComp =  Cast< UInteractComp >(OtherActor->FindComponentByClass(UInteractComp::StaticClass()));
 	if(InteractorComp)
 		InteractorComp->AddInteractable(this);
 }
 
 void UInteractableComp::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex)
 {
-	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
-	if(!Player)
-		return;
 	
-	UInteractComp* InteractorComp = Player->GetInteractComp();
-	
+	UInteractComp* InteractorComp =  Cast< UInteractComp >(OtherActor->FindComponentByClass(UInteractComp::StaticClass()));
 	if(InteractorComp)
 		InteractorComp->RemoveInteractable(this);
 }
