@@ -3,6 +3,7 @@
 
 #include "AI_Character.h"
 
+#include "ChaseAI_Controller.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -23,25 +24,29 @@ void AAI_Character::SelfDestruct()
 {
 	FVector StartLoc = GetActorLocation();
 	float ExplosionRadius = 150.0f;
-	TArray<FHitResult> Hit;
-	UKismetSystemLibrary::SphereTraceMulti(
+	TArray<TObjectPtr<AAI_Character>> AI = {};
+	TArray<FHitResult> OutHits;
+	bool bHit = UKismetSystemLibrary::SphereTraceMulti(
 		GetWorld(),
 		StartLoc,
 		StartLoc,
 		ExplosionRadius,
-		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		UEngineTypes::ConvertToTraceType(ECC_Camera),
 		false,
 		{},
 		EDrawDebugTrace::Persistent,
-		Hit,
+		OutHits,
 		true,
 		FLinearColor::Red,
 		FLinearColor::Green,
 		5.f);
 
-	for (FHitResult HitResult : Hit)
+	if(bHit)
 	{
-		UGameplayStatics::ApplyDamage(HitResult.GetActor(),50.0f,nullptr,this,UDamageType::StaticClass());
+		for (const FHitResult HitResult : OutHits)
+		{
+			UGameplayStatics::ApplyDamage(HitResult.GetActor(),ExplosionDamage,this->GetController(),this,UDamageType::StaticClass());
+		}
 	}
 	Destroy();
 }
