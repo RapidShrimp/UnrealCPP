@@ -3,6 +3,8 @@
 
 #include "AI_Character.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
@@ -19,6 +21,29 @@ void AAI_Character::BeginPlay()
 
 void AAI_Character::SelfDestruct()
 {
+	FVector StartLoc = GetActorLocation();
+	float ExplosionRadius = 150.0f;
+	TArray<FHitResult> Hit;
+	UKismetSystemLibrary::SphereTraceMulti(
+		GetWorld(),
+		StartLoc,
+		StartLoc,
+		ExplosionRadius,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		false,
+		{},
+		EDrawDebugTrace::Persistent,
+		Hit,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		5.f);
+
+	for (FHitResult HitResult : Hit)
+	{
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(),50.0f,nullptr,this,UDamageType::StaticClass());
+	}
+	Destroy();
 }
 
 // Called to bind functionality to input

@@ -29,6 +29,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(CallInEditor)
 	void SelfDestruct();
 public:
 	// Called to bind functionality to input
