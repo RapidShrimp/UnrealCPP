@@ -32,15 +32,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSetInteractPromptSignature OnSetInteractPrompt;
 	
-	void AddInteractable(AActor* InterfacedActor);
-	void RemoveInteractable(AActor* InterfacedActor);
+	void AddInteractable(UInteractableComp* Interactable);
+	void RemoveInteractable(UInteractableComp* Interactable);
 	void Interact();
-	//Interact Functions
+	
 protected:
-	TArray<TObjectPtr<AActor>> InteractableList;
-	TObjectPtr<AActor> CurrentSelected;
+	TArray<TObjectPtr<UInteractableComp>> InteractableList;
+	TObjectPtr<UInteractableComp> CurrentSelected;
 	FTimerHandle UpdateTimer;
 	TObjectPtr<AFPSProjectCharacter> OwningCharacter;
-	AActor* GetDesiredInteract();
+	UInteractableComp* GetDesiredInteract();
 	void ShowInteract();
 };

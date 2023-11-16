@@ -12,7 +12,6 @@
 // Sets default values for this component's properties
 UInteractComp::UInteractComp()
 {
-	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts
@@ -25,36 +24,47 @@ void UInteractComp::BeginPlay()
 	}
 }
 
-void UInteractComp::AddInteractable(AActor* InteractionActor)
+void UInteractComp::AddInteractable(UInteractableComp* Interactable)
 {
-	InteractableList.AddUnique(InteractionActor);
+	InteractableList.AddUnique(Interactable);
 	GetWorld()->GetTimerManager().SetTimer(UpdateTimer,this,&UInteractComp::ShowInteract,0.1f,true);
 }
 
-void UInteractComp::RemoveInteractable(AActor* InteractionActor)
+void UInteractComp::RemoveInteractable(UInteractableComp* Interactable)
 {
-	InteractableList.Remove(InteractionActor);
-	UE_LOG(LogTemp,Warning,TEXT("Removed"))
+	InteractableList.Remove(Interactable);
 }
 
-AActor* UInteractComp::GetDesiredInteract()
+UInteractableComp* UInteractComp::GetDesiredInteract()
 {
-	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
+	FVector StartLoc;
+	FVector EndLoc;
+	if(OwningCharacter)
+	{
+		StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
+		EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector() * 400.0f;
+	}
+	else
+	{
+		StartLoc = GetOwner()->GetActorLocation();
+		EndLoc = StartLoc + FVector::DownVector * 400.0f;
+	}
+	
 	FHitResult Hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),false,
 	{},EDrawDebugTrace::None,Hit,true,FLinearColor::Blue,FLinearColor::Green);
 
 	float PreviousDistance = 1000;
-	AActor* Desired = nullptr;
+	UInteractableComp* Desired = nullptr;
 	for(int i = 0; i < InteractableList.Num(); i++)
 	{
-		if(FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation())<PreviousDistance) //Get the distance from hit location to the 
-			{
-			PreviousDistance = FVector::Dist(Hit.Location,InteractableList[i]->GetActorLocation());
-			Desired= InteractableList[i];
-			} 
+		float const NewHit = FVector::Dist(Hit.Location,InteractableList[i]->GetOwner()->GetActorLocation());
+		if(NewHit<PreviousDistance) //Get the distance from hit location to the
+		{
+			PreviousDistance = NewHit;
+			Desired = InteractableList[i];
+		} 
 	}
 	return Desired;
 }
@@ -68,25 +78,22 @@ void UInteractComp::ShowInteract()
 		OnNoInteract.Broadcast();
 		return;
 	}
-	AActor* TestActor = GetDesiredInteract();
-	if(TestActor == nullptr || TestActor == CurrentSelected)
+	
+	UInteractableComp* DesiredInteract = GetDesiredInteract();
+	if(DesiredInteract == nullptr)
 	{
 		OnNoInteract.Broadcast();
 		return;
 	}
-	
-	UInteractableComp* Interaction = TestActor->FindComponentByClass<UInteractableComp>();
-	if(!Interaction)
-		return;
-	OnSetInteractPrompt.Broadcast(Interaction->InteractText,Interaction->InteractColour,Interaction->InteractTime);
+
+	OnSetInteractPrompt.Broadcast(DesiredInteract->InteractText,DesiredInteract->InteractColour,DesiredInteract->InteractTime);
 }
 
 void UInteractComp::Interact()
 {
-	AActor* Desired = GetDesiredInteract();
-	
-	if(!Desired)
-		return;
-	if(UKismetSystemLibrary::DoesImplementInterface(Desired,UInteract::StaticClass()))
-		IInteract::Execute_Interact(Desired,GetOwner());
+	if(UInteractableComp* InteractableComp = GetDesiredInteract())
+	{
+		InteractableComp->DoParentInteract(GetOwner());
+		RemoveInteractable(InteractableComp);
+	}
 }

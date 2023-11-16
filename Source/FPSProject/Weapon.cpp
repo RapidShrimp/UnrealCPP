@@ -71,12 +71,11 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 {
 	OwningCharacter = TargetCharacter;
 	if (OwningCharacter == nullptr)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("NOT TYPE PLAYER"))
 		return;
-	}
-	
+
 	_InteractableComp->SetCanInteract(false);
+	OwningCharacter->GetInteractComp()->RemoveInteractable(_InteractableComp);
+	
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules const AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(OwningCharacter->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
@@ -95,11 +94,12 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 void AWeapon::DropWeapon()
 {
 	if(OwningCharacter == nullptr)
-	{
 		return;
-	}
 	
-	SetCanInteract(true);
+	_InteractableComp->SetCanInteract(true);
+	OwningCharacter->GetInteractComp()->AddInteractable(_InteractableComp);
+
+	
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
 		PlayerController->RemoveWeaponMappings(this); 
@@ -107,7 +107,7 @@ void AWeapon::DropWeapon()
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
 		FHitResult Hit;
-		if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),OwningCharacter->GetActorLocation(),OwningCharacter->GetActorLocation() - FVector {0,0,1000},UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{this},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Green,FLinearColor::Red))
+		if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),OwningCharacter->GetActorLocation(),OwningCharacter->GetActorLocation() - FVector {0,0,1000},UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{this},EDrawDebugTrace::None,Hit,true,FLinearColor::Green,FLinearColor::Red))
 		{
 			SetActorLocation(Hit.Location);
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
@@ -140,10 +140,7 @@ bool AWeapon::Fire_Implementation()
 		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 		return  true;
 	}
-	else
-	{
 	return false;
-	}
 }
 
 void AWeapon::PlayFireAudio()

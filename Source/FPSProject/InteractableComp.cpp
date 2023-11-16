@@ -23,6 +23,7 @@ UInteractableComp::UInteractableComp()
 void UInteractableComp::BeginPlay()
 {
 	Super::BeginPlay();
+	SetCanInteract(bCanInteract);
 	_Collider->OnComponentBeginOverlap.AddUniqueDynamic(this, &UInteractableComp::OnBeginOverlap);
 	_Collider->OnComponentEndOverlap.AddUniqueDynamic(this, &UInteractableComp::OnEndOverlap);
 	
@@ -33,10 +34,17 @@ void UInteractableComp::BeginPlay()
 	}
 }
 
+void UInteractableComp::DoParentInteract(AActor* Interacting)
+{
+	if(AActor* Parent = GetOwner())
+		IInteract::Execute_Interact(Parent,Interacting);
+}
+
 void UInteractableComp::SetCanInteract(bool CanInteract)
 {
 	bCanInteract = CanInteract;
 	_Collider->SetActive(bCanInteract);
+	UE_LOG(LogTemp,Warning,TEXT("%s , Can Interact? : %hd"),*GetOwner()->GetName(),bCanInteract);
 }
 
 void UInteractableComp::DestroyComponent(bool bPromoteChildren)
@@ -57,19 +65,12 @@ void UInteractableComp::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	if(!bCanInteract)
 		return;
 	
-	UInteractComp* InteractorCompTest = Cast<UInteractComp>(OtherActor->GetComponentByClass(UInteractableComp::StaticClass()));
-	if(InteractorCompTest!=nullptr)
-		UE_LOG(LogTemp,Warning,TEXT("FOUND COMP"));
-
-	
 	AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor);
 	if(!Player)
 		return;
 	UInteractComp* InteractorComp = Player->GetInteractComp();
 	if(InteractorComp)
-	{
-		InteractorComp->AddInteractable(GetOwner());
-	}
+		InteractorComp->AddInteractable(this);
 }
 
 void UInteractableComp::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex)
@@ -81,7 +82,5 @@ void UInteractableComp::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 	UInteractComp* InteractorComp = Player->GetInteractComp();
 	
 	if(InteractorComp)
-	{
-		InteractorComp->RemoveInteractable(GetOwner());
-	}
+		InteractorComp->RemoveInteractable(this);
 }
