@@ -14,7 +14,7 @@ APickup::APickup()
 	_Mesh->SetupAttachment(RootComponent);
 	
 	_Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Collider"));
-	_Collider->SetupAttachment(RootComponent);
+	_Collider->SetupAttachment(_Mesh);
 }
 
 // Called when the game starts or when spawned
