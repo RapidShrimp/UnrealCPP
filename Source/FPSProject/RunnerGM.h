@@ -7,6 +7,8 @@
 #include "GameFramework/GameMode.h"
 #include "RunnerGM.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTimeChanged,int,NewTime);
+
 UCLASS()
 class FPSPROJECT_API ARunnerGM : public AGameMode
 {
@@ -18,6 +20,8 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
+	
+	FTimeChanged OnTimeChanged;
 	
 protected:
 	TArray<TObjectPtr<AActor>> _PlayerStarts;

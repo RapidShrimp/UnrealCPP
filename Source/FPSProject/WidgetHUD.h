@@ -24,9 +24,6 @@ public:
 	void UpdateHealth(float newHealthRatio);
 	void UpdatePoints(int newScore);
 	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
-
-	bool bDashInit;
-	void InitDash(int Dashes);
 	void UpdateDash(int DashesLeft,int MaxDashes);
 
 	void InteractPromptHide();
@@ -36,7 +33,7 @@ private:
 	TObjectPtr<UProgressBar> HealthBar;
 	
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ScoreText;
+	TObjectPtr<UTextBlock> CoinsText;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInteractPrompt> InteractPrompt ;

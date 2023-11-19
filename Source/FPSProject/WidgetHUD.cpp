@@ -15,8 +15,8 @@ void UWidgetHUD::NativeConstruct()
 	Super::NativeConstruct();
 	if(HealthBar)
 		HealthBar->SetPercent(1);
-	if(ScoreText)
-		ScoreText->SetText(FText::FromString(""));
+	if(CoinsText)
+		CoinsText->SetText(FText::FromString(""));
 	if(InteractPrompt)
 		InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
 } 
@@ -32,8 +32,8 @@ void UWidgetHUD::UpdateHealth(float newHealthRatio)
 
 void UWidgetHUD::UpdatePoints(int newScore)
 {
-	if(ScoreText)
-		ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Coins: %d"), newScore)));
+	if(CoinsText)
+		CoinsText->SetText(FText::FromString(FString::Printf(TEXT("Coins: %d"), newScore)));
 }
 
 void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentClip)
@@ -46,18 +46,8 @@ void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentCl
 		CurrentClipText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurrentClip)));
 }
 
-void UWidgetHUD::InitDash(int Dashes)
-{
-	for(int i = 0; i<Dashes-1; i++)
-	{
-		//Dynamically Create Dash UI Here;
-	}
-}
-
 void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 {
-	if(!bDashInit)
-		InitDash(MaxDashes);
 	if(DashUI)
 	{
 		int i = 0;

@@ -42,12 +42,19 @@ void ARunnerGM::BeginPlay()
 
 void ARunnerGM::DecreaseCountdown()
 {
+	UE_LOG(LogTemp,Warning,TEXT("%d"),_CountdownTimer);
+
+	_CountdownTimer--;
+	if(_CountdownTimer == 0)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Round Over"));
+	}
+	OnTimeChanged.Broadcast(_CountdownTimer);
 }
 
 void ARunnerGM::Handle_GameRuleCompleted()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Runner GM - Game Rule Completed"));
-
 }
 
 void ARunnerGM::Handle_GameRulPointsScored(AController* Controller, int Points)
