@@ -4,7 +4,6 @@
 #include "CoinPickup.h"
 
 #include "FPSProjectCharacter.h"
-#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -18,15 +17,13 @@ ACoinPickup::ACoinPickup()
 void ACoinPickup::BeginPlay()
 {
 	Super::BeginPlay();
-	_Collider->OnComponentBeginOverlap.AddUniqueDynamic(this,&APickup::OnPickup);
 }
 
 void ACoinPickup::OnPickup(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp,Warning,TEXT("PickedUp"));
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor))
 	{
+		Destroy();
 		OnCoinPickedUp.Broadcast(Player->Controller,Score);
-		Super::OnPickup(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	}
 }

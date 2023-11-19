@@ -9,34 +9,35 @@
 // Sets default values for this component's properties
 UGameRule_Coins::UGameRule_Coins()
 {
-
+	CoinsRemaining = 0;
 }
 
 void UGameRule_Coins::Init()
 {
-	Super::Init();
 	if(_Coins.Num() == 0)
 	{
 		TArray<AActor*> outActors;
 		UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Coin"), outActors);
-		for(AActor* a : outActors)
+
+		for(AActor* Coin : outActors)
 		{
-			_Coins.Add(Cast<ACoinPickup>(a->GetComponentByClass(ACoinPickup::StaticClass())));
+			if(ACoinPickup* VerifiedCoin =Cast<ACoinPickup>(Coin))
+			{
+				_Coins.AddUnique(VerifiedCoin);
+				 VerifiedCoin->OnCoinPickedUp.AddUniqueDynamic(this,&UGameRule_Coins::Handle_OnCoinPickup);
+			}
 		}
+		CoinsRemaining = _Coins.Num();
 	}
 
-	CoinsRemaining = _Coins.Num();
-	for(ACoinPickup* Coin : _Coins)
-	{
-		Coin->OnCoinPickedUp.AddUniqueDynamic(this,&UGameRule_Coins::Handle_OnCoinPickup);
-	}
+	Super::Init();
 
 }
 
 void UGameRule_Coins::Handle_OnCoinPickup(AController* causer, int CoinValue)
 {
-	UE_LOG(LogTemp,Warning,TEXT("PICKUP"))
 	CoinsRemaining--;
+	OnGameRulePointsScored.Broadcast(causer,CoinValue);
 	BroadcastGameRulePointsScored(causer,CoinValue);
 	if(CoinsRemaining==0)
 	{

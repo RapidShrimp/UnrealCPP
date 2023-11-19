@@ -23,10 +23,12 @@ void UGameRule::BeginPlay()
 
 void UGameRule::BroadcastGameRuleComplete()
 {
+	// Play Sound Globally
 }
 
-void UGameRule::BroadcastGameRulePointsScored(AController* scorer, int points)
+void UGameRule::BroadcastGameRulePointsScored(AController* Controller, int Points)
 {
+
 }
 
 

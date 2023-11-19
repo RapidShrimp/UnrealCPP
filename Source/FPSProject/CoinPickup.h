@@ -6,6 +6,8 @@
 #include "Pickup.h"
 #include "CoinPickup.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCoinPickupSignature , AController*,Controller,int,Score);
+
 UCLASS()
 class FPSPROJECT_API ACoinPickup : public APickup
 {

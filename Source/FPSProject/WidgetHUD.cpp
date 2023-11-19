@@ -16,7 +16,7 @@ void UWidgetHUD::NativeConstruct()
 	if(HealthBar)
 		HealthBar->SetPercent(1);
 	if(ScoreText)
-		ScoreText->SetText(FText::FromString("Score"));
+		ScoreText->SetText(FText::FromString(""));
 	if(InteractPrompt)
 		InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
 } 
@@ -30,10 +30,10 @@ void UWidgetHUD::UpdateHealth(float newHealthRatio)
 	}
 }
 
-void UWidgetHUD::UpdateScore(int newScore)
+void UWidgetHUD::UpdatePoints(int newScore)
 {
 	if(ScoreText)
-		ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), newScore)));
+		ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Coins: %d"), newScore)));
 }
 
 void UWidgetHUD::UpdateAmmoCounters(int CurrentAmmo, int ClipSize, int CurrentClip)

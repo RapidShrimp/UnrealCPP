@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameRule.h"
 #include "GameFramework/GameMode.h"
-#include "ExampleGM.generated.h"
+#include "RunnerGM.generated.h"
 
 UCLASS()
-class FPSPROJECT_API AExampleGM : public AGameMode
+class FPSPROJECT_API ARunnerGM : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AExampleGM();
+	ARunnerGM();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
@@ -24,15 +24,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TArray<TObjectPtr<AController>> _PlayerControllers;
+	int _PlayerScore;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<TObjectPtr<UGameRule>> _GameRuleManagers;
+	int _GameRulesLeft;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=MatchManagement)
 	int _CountdownTimer;
-
-	int _GameRulesLeft;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TArray<TObjectPtr<UGameRule>> _GameRuleManagers;
-
 	FTimerHandle _TimerDecreaseCountdown;
 	
 	UFUNCTION()
@@ -40,7 +39,7 @@ protected:
 	UFUNCTION()
 	void Handle_GameRuleCompleted();
 	UFUNCTION()
-	void Handle_GameRulePointsScored(AController* scorer, int points);
+	void Handle_GameRulPointsScored(AController* Controller,int Points);
 	
 	virtual void BeginPlay() override;
 

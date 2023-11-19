@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Pickup.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCoinPickupSignature , AController*,Controller,int,Score);
 
 class USphereComponent;
 

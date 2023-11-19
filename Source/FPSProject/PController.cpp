@@ -65,6 +65,11 @@ void APController::HandleDashUpdate(int DashesLeft, int MaxDashes)
 	_HUDWidget->UpdateDash(DashesLeft,MaxDashes);
 }
 
+void APController::HandlePointsUpdate(int Points)
+{
+	_HUDWidget->UpdatePoints(Points);
+}
+
 void APController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -87,6 +92,7 @@ void APController::BeginPlay()
 	}
 	if(MyPlayerCharacter)
 		MyPlayerCharacter->OnDashUpdate.AddUniqueDynamic(this,&APController::HandleDashUpdate);
+
 	if(MyPlayerCharacter->GetInteractComp())
 	{
 		MyPlayerCharacter->GetInteractComp()->OnSetInteractPrompt.AddUniqueDynamic(this,&APController::SetInteractPrompt);
