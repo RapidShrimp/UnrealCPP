@@ -9,11 +9,7 @@
 // Sets default values for this component's properties
 UGameRule_Target::UGameRule_Target()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 void UGameRule_Target::Init()
@@ -40,6 +36,7 @@ void UGameRule_Target::Init()
 void UGameRule_Target::Hand_TargetDestroyed(AController* causer, int TargetValue)
 {
 	_AmountRemaining--;
+	UE_LOG(LogTemp,Warning,TEXT("%d"),_AmountRemaining)
 	BroadcastGameRulePointsScored(causer,TargetValue);
 	if(_AmountRemaining== 0)
 	{

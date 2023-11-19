@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "InteractableComp.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FSetInteractPromptSignature, FString, newInteractText, FLinearColor, newColour,float, newInteractTime);
-
 class USphereComponent;
 
 //
@@ -20,24 +18,34 @@ public:
 	// Sets default values for this component's properties
 	UInteractableComp();
 
-	UPROPERTY(BlueprintAssignable)
-	FSetInteractPromptSignature OnSetInteractPrompt;
+	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _Collider;
-
-	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCanInteract = true;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FLinearColor InteractColour = FLinearColor{0,0,0,1};
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float InteractTime = 0;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FString InteractText = "" ;
+
+	void DoParentInteract(AActor* Interacting);
+	void SetCanInteract(bool CanInteract);
+	
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float _InteractSphereSize = 75.0f;
 private:
 
+	bool bCanInteract = true;
+	
 	virtual void DestroyComponent(bool bPromoteChildren) override;
 	virtual void OnAttachmentChanged() override;
+	
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

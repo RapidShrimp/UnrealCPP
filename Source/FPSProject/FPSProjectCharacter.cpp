@@ -173,17 +173,6 @@ void AFPSProjectCharacter::WallRun()
 		return;
 	}
 	
-	// Dot Product to See if the players velocity is going same direction
-	/*
-	FVector ForwardDir = GetVelocity();
-	ForwardDir.Normalize();
-	if(FVector::DotProduct(ForwardDir,GetWallForwardVector(DesiredWall)) < 0.7f)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("NOT LOOKING SAME DIR"));
-		return;
-	}
-	 */
-	
 	if(DesiredWall.GetActor()==R_Wall.GetActor())
 		bRightWall = true;
 	else
@@ -246,7 +235,7 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 	if (!bIsOnWall)
 	{
 		//Player Movement Functions
-		GetCharacterMovement()->GravityScale = 0.15;
+		GetCharacterMovement()->GravityScale = WallRunGravityScale;
 		if(GetCharacterMovement()->Velocity.Z> 0)
 			GetCharacterMovement()->Velocity.Z /= 2;
 		else
@@ -265,27 +254,22 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 
 FVector AFPSProjectCharacter::GetWallForwardVector(FHitResult Wall)
 {
-	/*Invert the quarternion rotation so that the player will alway have a forward */
-	int Invert = 1;
-	if(bRightWall)
-		Invert = -1;
-
-	const FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 * Invert;
-	return ForwardDir;
 	
-	/*
-	-------------------[Debug For Line Traces (Using Quaternions, May need these later)]-------------------
-
-	//Wall Normal
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
 
 	//Forward
-	FVector ForwardDir = Wall.Normal.Rotation().Quaternion().GetRightVector() *-1 * Invert;
-	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir * 50 ,FColor::Turquoise,false,10,0,4);
-	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
+	FVector ForwardDir = FVector::CrossProduct(Wall.Normal, FVector::DownVector * ((bRightWall) ? 1 : -1));
+	//DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + ForwardDir * 50,FColor::Purple,true,10,0,4);
+	return ForwardDir;
 
+	/*
+	-------------------[Debug For Line Traces (May need these later)]-------------------------------------
+
+	UE_LOG(LogTemp,Warning,TEXT("Rotation = %s"),*ForwardDir.Rotation().ToString());
+	//Wall Normal
+	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + Wall.Normal * 50,FColor::Green,true,10,0,4);
+	
 	//Back
-	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector() *bInvert;
+	FVector BackDir =  Wall.Normal.Rotation().Quaternion().GetRightVector();
 	DrawDebugLine(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + BackDir * 50,FColor::Red,false,10,0,4);
 
 	//Up
@@ -295,10 +279,8 @@ FVector AFPSProjectCharacter::GetWallForwardVector(FHitResult Wall)
 	//Player
 	FVector PlayerRot = Wall.ImpactPoint + GetActorForwardVector() * 50;
 	DrawDebugLine(GetWorld(),Wall.ImpactPoint, Wall.ImpactPoint + GetActorForwardVector() *50,FColor::Yellow,false,10,0,4);
-
 	-------------------------------------------------------------------------------------------------------
 	*/
-	
 }
 
 void AFPSProjectCharacter::DetachFromWall(bool bWallJump)
@@ -345,8 +327,7 @@ void AFPSProjectCharacter::Interact() const
 
 void AFPSProjectCharacter::SetRifle(bool bNewHasRifle, AWeapon* Weapon)
 {
-	if(!bHasRifle)
-		MyWeapon = Weapon;
+	MyWeapon = Weapon;
 	bHasRifle = bNewHasRifle;
 }
 

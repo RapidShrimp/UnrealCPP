@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
 	float PlayerMinWallRunSpeed = 520.0f;
 	float DefaultWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
+	float WallRunGravityScale = 0.2f;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="Dash")
 	float DashForce = 400;
@@ -152,7 +155,5 @@ public:
 	UHealthComponent* GetHealthComponent() const {return HealthComponent; }
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
-	
 };
 

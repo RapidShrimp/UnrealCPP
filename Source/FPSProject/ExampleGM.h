@@ -34,6 +34,7 @@ protected:
 	TArray<TObjectPtr<UGameRule>> _GameRuleManagers;
 
 	FTimerHandle _TimerDecreaseCountdown;
+	
 	UFUNCTION()
 	void DecreaseCountdown();
 	UFUNCTION()

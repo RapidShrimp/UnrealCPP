@@ -58,11 +58,11 @@ void AWeapon::Interact_Implementation(AActor* Interacting)
 	{
 		if(Player->GetHasRifle())
 		{
-		Player->GetWeapon()->DropWeapon();
+			Player->GetWeapon()->DropWeapon();
 		}
 		AttachWeapon(Player);
 		UE_LOG(LogTemp,Warning,TEXT("Interacted"))
-
+		
 	}
 	OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 }
@@ -71,10 +71,10 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 {
 	OwningCharacter = TargetCharacter;
 	if (OwningCharacter == nullptr)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("NOT TYPE PLAYER"))
 		return;
-	}
+
+	_InteractableComp->SetCanInteract(false);
+	OwningCharacter->GetInteractComp()->RemoveInteractable(_InteractableComp);
 	
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules const AttachmentRules(EAttachmentRule::SnapToTarget, true);
@@ -89,15 +89,16 @@ void AWeapon::AttachWeapon(AFPSProjectCharacter* TargetCharacter)
 		SetInstigator(OwningCharacter);
 		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 	}
-	
 }
 
 void AWeapon::DropWeapon()
 {
 	if(OwningCharacter == nullptr)
-	{
 		return;
-	}
+	
+	_InteractableComp->SetCanInteract(true);
+	OwningCharacter->GetInteractComp()->AddInteractable(_InteractableComp);
+
 	
 	if(APController* PlayerController = Cast<APController>(OwningCharacter->GetController()))
 	{
@@ -106,7 +107,7 @@ void AWeapon::DropWeapon()
 		DetachFromActor(DetatchmentRules);
 		OwningCharacter->SetRifle(false,nullptr);
 		FHitResult Hit;
-		if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),OwningCharacter->GetActorLocation(),OwningCharacter->GetActorLocation() - FVector {0,0,1000},UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{this},EDrawDebugTrace::Persistent,Hit,true,FLinearColor::Green,FLinearColor::Red))
+		if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),OwningCharacter->GetActorLocation(),OwningCharacter->GetActorLocation() - FVector {0,0,1000},UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{this},EDrawDebugTrace::None,Hit,true,FLinearColor::Green,FLinearColor::Red))
 		{
 			SetActorLocation(Hit.Location);
 			SetActorRotation(OwningCharacter->GetActorRotation() - FRotator {90,40,0});
@@ -139,10 +140,7 @@ bool AWeapon::Fire_Implementation()
 		OnAmmoCountersUpdate.Broadcast(_CurrentAmmo,_MaxClipSize,_CurrentClip);
 		return  true;
 	}
-	else
-	{
 	return false;
-	}
 }
 
 void AWeapon::PlayFireAudio()

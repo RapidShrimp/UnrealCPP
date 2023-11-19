@@ -74,3 +74,18 @@ void UWidgetHUD::UpdateDash(int DashesLeft, int MaxDashes)
 		
 	}
 }
+
+void UWidgetHUD::InteractPromptHide()
+{
+	if(!InteractPrompt)
+		return;
+	InteractPrompt->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UWidgetHUD::SetInteractPrompt(FString NewInteractText, FLinearColor NewColour, float NewInteractTime)
+{
+	if(!InteractPrompt)
+		return;
+	InteractPrompt->SetInteractPrompt(NewInteractText,NewColour,NewInteractTime);
+	InteractPrompt->SetVisibility(ESlateVisibility::Visible);
+}
