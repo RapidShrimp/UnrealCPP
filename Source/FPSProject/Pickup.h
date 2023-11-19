@@ -21,19 +21,20 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int Score = 1;
 	
+protected:
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<USceneComponent> _Root;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> _Mesh;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _Collider;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FCoinPickupSignature OnCoinPickedUp;
-	
-protected:
 	virtual void BeginPlay() override;
 
+public:
 	UFUNCTION()
-	void PickupCoin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	virtual void OnPickup(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 };
