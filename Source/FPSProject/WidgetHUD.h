@@ -22,7 +22,7 @@ class FPSPROJECT_API UWidgetHUD : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	void UpdateHealth(float newHealthRatio);
-	void UpdateScore(int newScore);
+	void UpdatePoints(int newScore);
 	void UpdateAmmoCounters(int CurrentAmmo,int ClipSize,int CurrentClip);
 
 	bool bDashInit;
@@ -37,7 +37,7 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ScoreText;
-
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInteractPrompt> InteractPrompt ;
 	

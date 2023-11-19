@@ -111,7 +111,9 @@ protected:
 	UFUNCTION()
 	void HandleDashUpdate(int DashesLeft,int MaxDashes);
 
+
 public:
+	void HandlePointsUpdate(int Points);
 	void AddWeaponMappings(UInputMappingContext* InFireMappingContext, AWeapon* Weapon);
 	void RemoveWeaponMappings(AWeapon* Weapon);
 

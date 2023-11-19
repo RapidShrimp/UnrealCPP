@@ -20,6 +20,9 @@ public:
 
 	FGameRuleCoinPickedUp OnCoinPickup;	
 	void Init() override;
+	
+	UFUNCTION()
+	void Handle_OnCoinPickup(AController* causer, int CoinValue);
 protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -27,8 +30,6 @@ protected:
 
 	int CoinsRemaining;
 
-	UFUNCTION()
-	void Handle_OnCoinPickup(AController* causer, int CoinValue);
 
 
 };

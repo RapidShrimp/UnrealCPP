@@ -7,7 +7,7 @@
 #include "GameRule.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameRuleCompleteSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameRulePointScoredSignature, AController*,scorer,int,points);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameRulePointsScoredSignature,AController*,Controller,int,Points);
 
 UCLASS(Abstract)
 class FPSPROJECT_API UGameRule : public UActorComponent
@@ -19,13 +19,13 @@ public:
 	UGameRule();
 
 	FGameRuleCompleteSignature OnGameRuleComplete;
-	FGameRulePointScoredSignature OnGameRulePointsScored;
-
+	FOnGameRulePointsScoredSignature OnGameRulePointsScored;
+	
 	UFUNCTION()
 	virtual void Init();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	void BroadcastGameRuleComplete();
-	void BroadcastGameRulePointsScored(AController* scorer, int points);
+	void BroadcastGameRulePointsScored(AController* Controller,int Points);
 };
