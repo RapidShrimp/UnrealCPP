@@ -138,11 +138,12 @@ void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
 void APController::CallDash() {MyPlayerCharacter->Dash();}
 void APController::CallSlide()
 {
-	MyPlayerCharacter->Slide();
+	MyPlayerCharacter->StartSlide();
 }
-
+		
 void APController::CallSlideEnd()
 {
+	MyPlayerCharacter->CancelSlide();
 }
 
 void APController::CallWallRun() {MyPlayerCharacter->WallRun();}

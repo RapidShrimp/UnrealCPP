@@ -93,19 +93,19 @@ void AFPSProjectCharacter::StopCrouch_Implementation()
 	GetCharacterMovement()-> MaxWalkSpeed = DefaultWalkSpeed;
 }
 
-void AFPSProjectCharacter::Slide()
+void AFPSProjectCharacter::StartSlide()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Can Slide %hdd"),PlayerCanSlide());
-
+	
 	if(!PlayerCanSlide())
 		return;
 	
 	FVector FloorInfluence = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
 	//SetFloorFrictionless
-	
 	GetCharacterMovement()->GroundFriction = 0;
 	GetCharacterMovement()->BrakingDecelerationWalking = 3000;
-	
+	GetCharacterMovement()->AddForce(FloorInfluence * 150* 1000);
+
+	UE_LOG(LogTemp,Warning,TEXT("Slide-Floor Influence (Normalized)\n %s"),*FloorInfluence.ToString())
 	if(FloorInfluence != FVector::ZeroVector)
 	{
 		GetCharacterMovement()->AddForce(FloorInfluence * SlideForce);
@@ -118,24 +118,24 @@ void AFPSProjectCharacter::Slide()
 	}
 }
 
-FVector  AFPSProjectCharacter::CalculateFloorInfluence(const FVector& FloorNormal)
+void AFPSProjectCharacter::CancelSlide()
 {
-	FVector FloorInfluence = FVector::CrossProduct(FloorNormal, FVector::CrossProduct(FloorNormal,FVector::UpVector));
-	FloorInfluence.Normalize();
-	return FloorInfluence;
+	
+}
+
+FVector AFPSProjectCharacter::CalculateFloorInfluence(const FVector FloorNormal)
+{
+	FVector FloorDownAngle = FVector::CrossProduct(FloorNormal, FVector::CrossProduct(FloorNormal,FVector::UpVector));
+	FloorDownAngle.Normalize();
+	return FloorDownAngle;
 }
 bool AFPSProjectCharacter::PlayerCanSlide()
 {
-	//if(FloorAngle>MinFallAngle && Player Looking within 45Deg of FloorInfluence && Player Direction is not moving away from influence
-	//OR
-	//(floorFlat && ForwardSpeed < MinSlideSpeed))
-	//AND
-	//Is Not Falling
-	
-	FVector const FloorDir = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
-	FVector PlayerDirection = GetCharacterMovement()->Velocity;
-	PlayerDirection.Normalize();
-	
+	/*if(FloorAngle>MinFallAngle && Player Looking within 45Deg of FloorInfluence && Player Direction is not moving away from influence
+	OR
+	(floorFlat && ForwardSpeed < MinSlideSpeed))
+	AND
+	Is Not Falling */
 	/*bool const SlopeSteepEnough = FMath::RadiansToDegrees(FVector::DotProduct(FloorDir,FVector::UpVector)) < MinSlopeAngle*-1;
 	bool const ActorLookingTowardsInfluence = FVector::DotProduct(GetActorForwardVector(),FloorDir) > 0.5;
 	bool const ActorMovingTowardsInfluence = FVector::DotProduct(PlayerDirection,FloorDir) > 0.5f;
@@ -143,14 +143,18 @@ bool AFPSProjectCharacter::PlayerCanSlide()
 	bool const SpeedThresholdMet = FVector::DotProduct(GetVelocity(),GetActorForwardVector()) > MinSlideSpeed;
 	bool const FloorIsFlat = FloorDir == FVector::ZeroVector;
 	*/
+
+	FVector FloorDir = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
+	FVector PlayerDirection = GetCharacterMovement()->Velocity;
+	PlayerDirection.Normalize();
 	
 	bool const FloorSpeedCheck = FVector::DotProduct(GetVelocity(),GetActorForwardVector()) > MinSlideSpeed && FloorDir == FVector::ZeroVector;
 	bool const SlopeCheck = FMath::RadiansToDegrees(FVector::DotProduct(FloorDir,FVector::UpVector)) < MinSlopeAngle*-1 && FVector::DotProduct(GetActorForwardVector(),FloorDir) > 0.5 && (FVector::DotProduct(PlayerDirection,FloorDir) > 0.5f || GetCharacterMovement()->Velocity == FVector::ZeroVector);
+
 	if(GetCharacterMovement()->IsFalling())
 		return false;
 	if(SlopeCheck || FloorSpeedCheck)
 			return true;
-	
 	return false;
 }
 

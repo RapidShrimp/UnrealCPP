@@ -94,22 +94,18 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
 	FHitResult CurrentWall;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
 	float MinSlideSpeed = 400;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
 	float MinSlopeAngle = 10;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
 	float SlideForce = 1000;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
-
 	UPROPERTY()
 	TObjectPtr<AWeapon> MyWeapon;
-	//Functions
-	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
-	void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
-
+	
 public:
 
 	//Movement Functions
@@ -121,7 +117,9 @@ public:
 	void StartCrouch();
 	UFUNCTION(BlueprintNativeEvent)
 	void StopCrouch();
-	void Slide();
+
+	void StartSlide();
+	void CancelSlide();
 	void Dash();
 	void DashRecharge();
 
@@ -139,24 +137,24 @@ public:
 	void WallRun();
 	void DetachFromWall(bool bWallJump);
 
-	static FVector CalculateFloorInfluence(const FVector& FloorNormal);
-
-	
 protected:
-	FHitResult CheckWallInDirection(bool CheckRightWall);
-	bool PlayerGrabWall(FHitResult Wall);
-	
-	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
-	bool PlayerCanWallRide();
 	UFUNCTION(BlueprintPure,BlueprintCallable,Category ="Slide")
 	bool PlayerCanSlide();
-	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
-	void RotateTowardsForward(FVector WallForward);
+	UFUNCTION(Category ="Slide")
+	FVector CalculateFloorInfluence(const FVector FloorNormal);
 	
+	FHitResult CheckWallInDirection(bool CheckRightWall);
+	bool PlayerGrabWall(FHitResult Wall);
+	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
+	bool PlayerCanWallRide();
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
 	FVector GetWallForwardVector(FHitResult Wall);
 	
 	//Camera Functions
+	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
+	void RotateTowardsForward(FVector WallForward);
+	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
+	void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
 	void WallTilt(bool OnRightWall);
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
