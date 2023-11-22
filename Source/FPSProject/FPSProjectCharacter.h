@@ -93,10 +93,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
 	FHitResult CurrentWall;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float MinSlideSpeed = 400;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float MinSlopeAngle = 10;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float SlideForce = 1000;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
-	
+
+	UPROPERTY()
 	TObjectPtr<AWeapon> MyWeapon;
 	//Functions
 	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
@@ -131,7 +139,7 @@ public:
 	void WallRun();
 	void DetachFromWall(bool bWallJump);
 
-	FVector CalculateFloorInfluence(FVector FloorNormal);
+	static FVector CalculateFloorInfluence(const FVector& FloorNormal);
 
 	
 protected:
@@ -140,7 +148,8 @@ protected:
 	
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
 	bool PlayerCanWallRide();
-	
+	UFUNCTION(BlueprintPure,BlueprintCallable,Category ="Slide")
+	bool PlayerCanSlide();
 	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
 	void RotateTowardsForward(FVector WallForward);
 	

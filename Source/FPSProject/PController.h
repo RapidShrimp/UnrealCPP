@@ -96,6 +96,7 @@ protected:
 	
 	void CallDash();
 	void CallSlide();
+	void CallSlideEnd();
 	void CallWallRun();
 	void CancelWallRun();
 	
