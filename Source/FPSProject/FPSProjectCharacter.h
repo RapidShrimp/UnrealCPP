@@ -131,6 +131,9 @@ public:
 	void WallRun();
 	void DetachFromWall(bool bWallJump);
 
+	FVector CalculateFloorInfluence(FVector FloorNormal);
+
+	
 protected:
 	FHitResult CheckWallInDirection(bool CheckRightWall);
 	bool PlayerGrabWall(FHitResult Wall);

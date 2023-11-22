@@ -95,8 +95,31 @@ void AFPSProjectCharacter::StopCrouch_Implementation()
 
 void AFPSProjectCharacter::Slide()
 {
+	CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
+	GetCharacterMovement()->GroundFriction = 0;
 	UE_LOG(LogTemp,Display,TEXT("Sliding"));
 }
+FVector AFPSProjectCharacter::CalculateFloorInfluence(FVector FloorNormal)
+{
+	if(FloorNormal == FVector::UpVector)
+		return FVector::ZeroVector;
+	
+	FVector FloorInfluence;
+	FVector::CrossProduct(FloorNormal,FVector::UpVector);
+	FVector FirstCalc = FVector::CrossProduct(FloorNormal,FVector::UpVector);
+	FloorInfluence.CrossProduct(FloorNormal, FirstCalc);
+
+	
+	
+	FHitResult Wall = GetCharacterMovement()->CurrentFloor.HitResult;
+	FHitResult OutHit;
+	UKismetSystemLibrary::LineTraceSingle(GetWorld(),Wall.ImpactPoint,Wall.ImpactPoint + FVector::CrossProduct(FloorNormal,FirstCalc) * 100,UEngineTypes::ConvertToTraceType(ECC_Vehicle),false,{},EDrawDebugTrace::ForDuration,OutHit,true,FLinearColor::Red,FLinearColor::Green,5 );
+	return FloorInfluence;
+}
+
+
+
+
 
 void AFPSProjectCharacter::Dash()
 {
@@ -311,6 +334,7 @@ void AFPSProjectCharacter::DetachFromWall(bool bWallJump)
 	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
 	CancelWallTilt();
 }
+
 
 void AFPSProjectCharacter::Landed(const FHitResult& Hit)
 {
