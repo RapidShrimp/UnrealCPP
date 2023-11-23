@@ -8,7 +8,8 @@
 #include "Weapon.h"
 #include "FPSProjectCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateDashSignature,int,DashesLeft,int,MaxDashes);
+class UTimelineComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUpdateDashSignature, int, DashesLeft, int, MaxDashes);
 
 class UInteractComp;
 class UHealthComponent;
@@ -19,6 +20,15 @@ class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
 class AWeapon;
+
+UENUM()
+enum EMovementType
+{
+	Walking,
+	Sprinting,
+	Crouched,
+	Sliding
+};
 
 UCLASS(config=Game)
 class AFPSProjectCharacter : public ACharacter
@@ -36,7 +46,11 @@ class AFPSProjectCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
-	
+
+	UPROPERTY()
+	TObjectPtr<UTimelineComponent> SlideTimeline;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCurveFloat> FloatCurve;
 public:
 	AFPSProjectCharacter();
 	
@@ -93,15 +107,25 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "WallRun")
 	FHitResult CurrentWall;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
+	float MinSlideSpeed = 600;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
+	float MinSlopeAngle = 10;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Slide")
+	float SlideForce = 300000;
+
+	float SlideForceMultiplier = 1;
+	bool bIsSliding;
+	FTimerHandle SlideDecrease;
+	void LowerMultiplier();
+	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
-	
+	UPROPERTY()
 	TObjectPtr<AWeapon> MyWeapon;
-	//Functions
-	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
-	void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
-
+	
 public:
 
 	//Movement Functions
@@ -113,7 +137,9 @@ public:
 	void StartCrouch();
 	UFUNCTION(BlueprintNativeEvent)
 	void StopCrouch();
-	void Slide();
+
+	void StartSlide();
+	void CancelSlide();
 	void Dash();
 	void DashRecharge();
 
@@ -131,20 +157,25 @@ public:
 	void WallRun();
 	void DetachFromWall(bool bWallJump);
 
+	virtual void Tick(float DeltaSeconds) override;
 protected:
+	UFUNCTION(BlueprintPure,BlueprintCallable,Category ="Slide")
+	bool PlayerCanSlide();
+	UFUNCTION(BlueprintPure,BlueprintCallable,Category ="Slide")	
+	FVector CalculateFloorInfluence(const FVector FloorNormal);
+	void ApplySlideForce();
 	FHitResult CheckWallInDirection(bool CheckRightWall);
 	bool PlayerGrabWall(FHitResult Wall);
-	
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
 	bool PlayerCanWallRide();
-	
-	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
-	void RotateTowardsForward(FVector WallForward);
-	
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = "WallRun")
 	FVector GetWallForwardVector(FHitResult Wall);
 	
 	//Camera Functions
+	UFUNCTION(BlueprintImplementableEvent, Category = "WallRun")
+	void RotateTowardsForward(FVector WallForward);
+	UFUNCTION(BlueprintImplementableEvent, Category = Camera)
+	void LerpCamFOV(float DesiredFieldOfView, float CurrentFieldOfView);
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
 	void WallTilt(bool OnRightWall);
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable, Category = "WallRun")
