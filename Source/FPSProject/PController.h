@@ -52,8 +52,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> CrouchAction;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
-	TObjectPtr<UInputAction> SlideAction;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "True"))
 	TObjectPtr<UInputAction> DashAction;
@@ -95,8 +93,6 @@ protected:
 	void CallJumpingEnd();
 	
 	void CallDash();
-	void CallSlide();
-	void CallSlideEnd();
 	void CallWallRun();
 	void CancelWallRun();
 	

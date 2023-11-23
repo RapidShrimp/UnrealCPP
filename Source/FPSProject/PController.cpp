@@ -24,11 +24,9 @@ void APController::SetupInputComponent()
 			EIP->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APController::CallJumpingStart);
 			EIP->BindAction(JumpAction, ETriggerEvent::Completed, this, &APController::CallJumpingEnd);
 			EIP->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&APController::CallCrouchStart);
-			EIP->BindAction(CrouchAction,ETriggerEvent::Completed,this,&APController::CallCrouchEnd);
-			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
+			EIP->BindAction(CrouchAction,ETriggerEvent::Canceled,this,&APController::CallCrouchEnd);
 			
-			EIP->BindAction(SlideAction,ETriggerEvent::Triggered,this,&APController::CallSlide);
-			EIP->BindAction(SlideAction,ETriggerEvent::Canceled,this,&APController::CallSlideEnd);
+			EIP->BindAction(DashAction,ETriggerEvent::Completed,this,&APController::CallDash);
 		
 			EIP->BindAction(WallRideAction,ETriggerEvent::Triggered,this,&APController::CallWallRun);
 			EIP->BindAction(WallRideAction,ETriggerEvent::Completed,this,&APController::CancelWallRun);
@@ -136,15 +134,6 @@ void APController::CallCrouchEnd() {MyPlayerCharacter->StopCrouch();}
 void APController::CallJumpingStart() {MyPlayerCharacter->Jump();}
 void APController::CallJumpingEnd() {MyPlayerCharacter->StopJumping();}
 void APController::CallDash() {MyPlayerCharacter->Dash();}
-void APController::CallSlide()
-{
-	MyPlayerCharacter->StartSlide();
-}
-		
-void APController::CallSlideEnd()
-{
-	MyPlayerCharacter->CancelSlide();
-}
 
 void APController::CallWallRun() {MyPlayerCharacter->WallRun();}
 void APController::CancelWallRun() {MyPlayerCharacter->DetachFromWall(true);}

@@ -125,8 +125,14 @@ void AFPSProjectCharacter::SprintStop()
 
 void AFPSProjectCharacter::StartCrouch_Implementation()
 {
-	if(bIsSliding)
-		return;
+	if(PlayerCanSlide())
+	{
+		bIsSliding = true;
+		SlideForceMultiplier = 1;
+		GetCharacterMovement()->GroundFriction = 0;
+		GetCharacterMovement()->BrakingDecelerationWalking = 3000;
+	}
+
 	Crouch();
 	SprintStop();
 	GetCharacterMovement()-> MaxWalkSpeed *= 0.6;
@@ -134,21 +140,10 @@ void AFPSProjectCharacter::StartCrouch_Implementation()
 
 void AFPSProjectCharacter::StopCrouch_Implementation()
 {
-	if(!bIsSliding)
-		UnCrouch();
+	if(bIsSliding)
+		CancelSlide();
+	UnCrouch();
 	GetCharacterMovement()-> MaxWalkSpeed = DefaultWalkSpeed;
-}
-
-void AFPSProjectCharacter::StartSlide()
-{
-	
-	if(!PlayerCanSlide())
-		return;
-	bIsSliding = true;
-	SlideForceMultiplier = 1;
-	StartCrouch();
-	GetCharacterMovement()->GroundFriction = 0;
-	GetCharacterMovement()->BrakingDecelerationWalking = 3000;
 }
 
 void AFPSProjectCharacter::CancelSlide()
@@ -171,9 +166,11 @@ void AFPSProjectCharacter::ApplySlideForce()
 	
 	FVector FloorInfluence = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
 	UE_LOG(LogTemp,Warning,TEXT("Slide-Floor Influence (Normalized)\n %s"),*FloorInfluence.ToString())
-	if(FloorInfluence != FVector::ZeroVector)
+
+	if(FloorInfluence != FVector::ZeroVector && PlayerCanSlide())
 	{
-		GetCharacterMovement()->AddForce(FloorInfluence * SlideForce * SlideForceMultiplier*0.5f);
+		
+		GetCharacterMovement()->AddForce(FloorInfluence * SlideForce * SlideForceMultiplier);
 		SlideForceMultiplier = 1;
 		
 	}
@@ -365,6 +362,7 @@ bool AFPSProjectCharacter::PlayerGrabWall(FHitResult Wall)
 		bIsOnWall = true;
 		WallTilt(bRightWall);
 	}
+	
 	bMovementLocked = true;
 	CurrentWall = Wall;
 	RotateTowardsForward(GetWallForwardVector(Wall));
