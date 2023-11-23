@@ -9,6 +9,7 @@
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -42,10 +43,52 @@ AFPSProjectCharacter::AFPSProjectCharacter()
 
 void AFPSProjectCharacter::BeginPlay()
 {
+	FOnTimelineFloat  OnTimelineFloat;
+	FOnTimelineEventStatic OnTimelineEventStatic;
 	Super::BeginPlay();
 	WallJumpsLeft = WallJumps;
 	DefaultHeight = GetDefaultHalfHeight();
 	OnDashUpdate.Broadcast(CurrentDashes, Dashes);
+
+
+/*
+	if (FloatCurve != NULL)
+	{
+		SlideTimeline = NewObject(this,, FName("SlideTimeline"));
+		SlideTimeline->CreationMethod = EComponentCreationMethod::UserConstructionScript; // Indicate it comes from a blueprint so it gets cleared when we rerun construction scripts
+		this->BlueprintCreatedComponents.Add(SlideTimeline); // Add to array so it gets saved
+		SlideTimeline->SetNetAddressable();    // This component has a stable name that can be referenced for replication
+
+		SlideTimeline->SetPropertySetObject(this); // Set which object the timeline should drive properties on
+		SlideTimeline->SetDirectionPropertyName(FName("TimelineDirection"));
+
+		SlideTimeline->SetLooping(false);
+		SlideTimeline->SetTimelineLength(5.0f);
+		SlideTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+
+		SlideTimeline->SetPlaybackPosition(0.0f, false);
+
+		//Add the float curve to the timeline and connect it to your timelines's interpolation function
+		OnTimelineFloat.BindUFunction(this, FName{ TEXT("TimelineCallback") });
+		OnTimelineEventStatic.BindUFunction(this, FName{ TEXT("TimelineFinishedCallback") });
+		SlideTimeline->AddInterpFloat(FloatCurve, OnTimelineFloat);
+		SlideTimeline->SetTimelineFinishedFunc(OnTimelineEventStatic);
+
+		SlideTimeline->RegisterComponent();
+	}
+*/
+}
+
+
+void AFPSProjectCharacter::LowerMultiplier()
+{
+	SlideForceMultiplier -= 0.1f;
+	if(SlideForceMultiplier <= 0)
+	{
+		CancelSlide();
+		SlideForceMultiplier = 0;
+		GetWorldTimerManager().ClearTimer(SlideDecrease);
+	}
 }
 
 void AFPSProjectCharacter::Move(const FInputActionValue& Value)
@@ -82,6 +125,8 @@ void AFPSProjectCharacter::SprintStop()
 
 void AFPSProjectCharacter::StartCrouch_Implementation()
 {
+	if(bIsSliding)
+		return;
 	Crouch();
 	SprintStop();
 	GetCharacterMovement()-> MaxWalkSpeed *= 0.6;
@@ -89,7 +134,8 @@ void AFPSProjectCharacter::StartCrouch_Implementation()
 
 void AFPSProjectCharacter::StopCrouch_Implementation()
 {
-	UnCrouch();
+	if(!bIsSliding)
+		UnCrouch();
 	GetCharacterMovement()-> MaxWalkSpeed = DefaultWalkSpeed;
 }
 
@@ -98,29 +144,17 @@ void AFPSProjectCharacter::StartSlide()
 	
 	if(!PlayerCanSlide())
 		return;
-	
-	FVector FloorInfluence = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
-	//SetFloorFrictionless
+	bIsSliding = true;
+	SlideForceMultiplier = 1;
+	StartCrouch();
 	GetCharacterMovement()->GroundFriction = 0;
 	GetCharacterMovement()->BrakingDecelerationWalking = 3000;
-	GetCharacterMovement()->AddForce(FloorInfluence * 150* 1000);
-
-	UE_LOG(LogTemp,Warning,TEXT("Slide-Floor Influence (Normalized)\n %s"),*FloorInfluence.ToString())
-	if(FloorInfluence != FVector::ZeroVector)
-	{
-		GetCharacterMovement()->AddForce(FloorInfluence * SlideForce);
-	}
-	else
-	{
-		FVector SlideDir = GetActorForwardVector();
-		SlideDir.Normalize();
-		GetCharacterMovement()->AddForce(SlideDir*SlideForce);
-	}
 }
 
 void AFPSProjectCharacter::CancelSlide()
 {
-	
+	bIsSliding = false;
+	StopCrouch();
 }
 
 FVector AFPSProjectCharacter::CalculateFloorInfluence(const FVector FloorNormal)
@@ -129,6 +163,32 @@ FVector AFPSProjectCharacter::CalculateFloorInfluence(const FVector FloorNormal)
 	FloorDownAngle.Normalize();
 	return FloorDownAngle;
 }
+
+void AFPSProjectCharacter::ApplySlideForce()
+{
+	if(!bIsSliding)
+		return;
+	
+	FVector FloorInfluence = CalculateFloorInfluence(GetCharacterMovement()->CurrentFloor.HitResult.Normal);
+	UE_LOG(LogTemp,Warning,TEXT("Slide-Floor Influence (Normalized)\n %s"),*FloorInfluence.ToString())
+	if(FloorInfluence != FVector::ZeroVector)
+	{
+		GetCharacterMovement()->AddForce(FloorInfluence * SlideForce * SlideForceMultiplier*0.5f);
+		SlideForceMultiplier = 1;
+		
+	}
+	else
+	{
+		if(!SlideDecrease.IsValid())
+			GetWorld()->GetTimerManager().SetTimer(SlideDecrease,this,&AFPSProjectCharacter::LowerMultiplier,0.1,true);
+		FVector SlideDir = GetActorForwardVector();
+		SlideDir.Normalize();
+		GetCharacterMovement()->AddForce(SlideDir*SlideForce*SlideForceMultiplier);
+		//StartDecreasing Multiplier
+	}
+}
+
+
 bool AFPSProjectCharacter::PlayerCanSlide()
 {
 	/*if(FloorAngle>MinFallAngle && Player Looking within 45Deg of FloorInfluence && Player Direction is not moving away from influence
@@ -157,9 +217,6 @@ bool AFPSProjectCharacter::PlayerCanSlide()
 			return true;
 	return false;
 }
-
-
-
 
 void AFPSProjectCharacter::Dash()
 {
@@ -375,6 +432,12 @@ void AFPSProjectCharacter::DetachFromWall(bool bWallJump)
 	PlayerController->PlayerCameraManager->ViewYawMin = 0;
 	PlayerController->PlayerCameraManager->ViewYawMax =359.998993;
 	CancelWallTilt();
+}
+
+void AFPSProjectCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	ApplySlideForce();
 }
 
 
