@@ -177,7 +177,7 @@ void AFPSProjectCharacter::ApplySlideForce()
 	else
 	{
 		if(!SlideDecrease.IsValid())
-			GetWorld()->GetTimerManager().SetTimer(SlideDecrease,this,&AFPSProjectCharacter::LowerMultiplier,0.1,true);
+			GetWorld()->GetTimerManager().SetTimer(SlideDecrease,this,&AFPSProjectCharacter::LowerMultiplier,0.05,true);
 		FVector SlideDir = GetActorForwardVector();
 		SlideDir.Normalize();
 		GetCharacterMovement()->AddForce(SlideDir*SlideForce*SlideForceMultiplier);
