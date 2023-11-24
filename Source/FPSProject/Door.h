@@ -30,7 +30,9 @@ protected:
 	TObjectPtr<UBoxComponent> _Collider;
 	
 	
-
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<AActor> ActivatingActor;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bIsUnlocked;
 	
@@ -43,7 +45,7 @@ protected:
 	void DoorLock(bool UnLocked);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OpenDoor();
+	void OpenDoor(AActor* OpeningActor);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void CloseDoor();

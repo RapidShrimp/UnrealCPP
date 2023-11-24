@@ -23,7 +23,7 @@ void ACoinPickup::OnPickup(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	if(AFPSProjectCharacter* Player = Cast<AFPSProjectCharacter>(OtherActor))
 	{
-		Destroy();
 		OnCoinPickedUp.Broadcast(Player->Controller,Score);
+		Super::OnPickup(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	}
 }

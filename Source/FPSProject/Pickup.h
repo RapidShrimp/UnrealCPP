@@ -30,8 +30,12 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USphereComponent> _Collider;
-	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<USoundBase> _PickupSound;
+	
+	virtual void BeginPlay() override;
+	void PlayPickupAudio();
 public:
 	UFUNCTION()
 	virtual void OnPickup(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);

@@ -3,6 +3,7 @@
 
 #include "Door.h"
 
+#include "Activator.h"
 #include "FPSProjectCharacter.h"
 #include "Components/BoxComponent.h"
 
@@ -25,15 +26,29 @@ ADoor::ADoor()
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
-	_Collider->OnComponentBeginOverlap.AddDynamic(this,&ADoor::OnCollBeginOverlap);
-	_Collider->OnComponentEndOverlap.AddDynamic(this,&ADoor::OnCollEndOverlap);
-	StartLocation = _Mesh->GetComponentLocation();
+	if(ActivatingActor!=nullptr)
+	{
+		if(UActivator* Activator = ActivatingActor->GetComponentByClass<UActivator>())
+		{
+			Activator->OnActivated.AddUniqueDynamic(this,&ADoor::OpenDoor);
+			Activator->OnDeactivated.AddUniqueDynamic(this,&ADoor::CloseDoor);
+		}
+	}
+	else
+	{
+		_Collider->OnComponentBeginOverlap.AddDynamic(this,&ADoor::OnCollBeginOverlap);
+		_Collider->OnComponentEndOverlap.AddDynamic(this,&ADoor::OnCollEndOverlap);
+	}
+	
+	StartLocation = _Mesh->GetRelativeLocation();
+
+
 }
 
 void ADoor::OnCollBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(Cast<AFPSProjectCharacter>(OtherActor) && bIsUnlocked)
-		OpenDoor();
+		OpenDoor(OtherActor);
 
 }
 
@@ -47,12 +62,12 @@ void ADoor::DoorLock(bool UnLocked)
 	bIsUnlocked = UnLocked;
 
 	if(bIsUnlocked)
-		OpenDoor();
+		OpenDoor(nullptr);
 	else
 		CloseDoor();
 }
 
-void ADoor::OpenDoor_Implementation()
+void ADoor::OpenDoor_Implementation(AActor* Opener)
 {
 	UE_LOG(LogTemp,Warning,TEXT("DoorOpen"));
 }

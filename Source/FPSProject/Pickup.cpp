@@ -4,6 +4,7 @@
 #include "Pickup.h"
 
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -26,8 +27,16 @@ void APickup::BeginPlay()
 	_Collider->OnComponentBeginOverlap.AddUniqueDynamic(this,&APickup::OnPickup);
 }
 
+void APickup::PlayPickupAudio()
+{
+	if(_PickupSound == nullptr)
+		return;
+	UGameplayStatics::PlaySoundAtLocation(this, _PickupSound, this->GetActorLocation());
+}
+
 void APickup::OnPickup(UPrimitiveComponent* OverlappedComponent,	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,	const FHitResult& SweepResult)
 {
+	PlayPickupAudio();
 	Destroy();
 }
 
