@@ -33,7 +33,7 @@ bool AWeapon_Hitscan::Fire_Implementation()
 	FHitResult Hit;
 	if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),
-	true,{this, GetOwner()},EDrawDebugTrace::None,
+	true,{this, GetOwner()},EDrawDebugTrace::ForDuration,
 	Hit,true,FLinearColor::Red,FLinearColor::Green, 5.0f))
 {
 	UGameplayStatics::ApplyDamage(Hit.GetActor(),_Damage,OwningCharacter->GetController(),this,UDamageType::StaticClass());
