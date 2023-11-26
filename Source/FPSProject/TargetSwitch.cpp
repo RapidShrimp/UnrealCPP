@@ -5,7 +5,6 @@
 
 #include "Activator.h"
 #include "HealthComponent.h"
-#include "SNegativeActionButton.h"
 
 
 // Sets default values
@@ -16,29 +15,19 @@ ATargetSwitch::ATargetSwitch()
 
 	_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	_Mesh->SetupAttachment(_Root);
-
-	_HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+	
 	_Activator = CreateDefaultSubobject<UActivator>(TEXT("ActivatorSwitch"));
 
 }
 // Called when the game starts or when spawned
 void ATargetSwitch::BeginPlay()
 {
-	if(_HealthComp)
-	{
-		_HealthComp->OnHealthComponentDamaged.AddUniqueDynamic(this,&ATargetSwitch::Handle_TargetHit);
-	}
-	
+	OnTakeAnyDamage.AddUniqueDynamic(this,&ATargetSwitch::Handle_TargetHit);
 }
 
-void ATargetSwitch::Handle_TargetHit(float NewHealth, float CurrentHealth, float MaxHealth)
+void ATargetSwitch::Handle_TargetHit(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
 {
 	_Activator->CallActivate();
+	UE_LOG(LogTemp,Warning,TEXT("TARGET HIT"))
 }
-
-// Called every frame
-void ATargetSwitch::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

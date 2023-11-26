@@ -3,15 +3,12 @@
 
 #include "FirstObject.h"
 #include "Components/ArrowComponent.h"
-#include "Components/BoxComponent.h"
 #include "HealthComponent.h"
 #include "GameFramework/RotatingMovementComponent.h"
 
 // Sets default values
 AFirstObject::AFirstObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 	_Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(_Root);
 
@@ -23,10 +20,7 @@ AFirstObject::AFirstObject()
 
 	_RotationComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
 	_RotationComp->SetAutoActivate(false);
-
-	_BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	_BoxComponent->SetupAttachment(_Root);
-
+	
 	_HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
@@ -34,7 +28,6 @@ AFirstObject::AFirstObject()
 void AFirstObject::BeginPlay()
 {
 	Super::BeginPlay();
-	_BoxComponent->OnComponentHit.AddUniqueDynamic(this,&AFirstObject::Handle_ComponentHit);
 }
 
 void AFirstObject::StartRotating()
@@ -52,19 +45,3 @@ void AFirstObject::AddRotationSpeed()
 		bIsFloating = true;
 	}
 }
-
-// Called every frame
-void AFirstObject::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void AFirstObject::Handle_ComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if(_HealthComponent!=nullptr)
-	{
-		
-	}
-}
-

@@ -38,9 +38,6 @@ protected:
 	TObjectPtr<URotatingMovementComponent> _RotationComp;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<UBoxComponent> _BoxComponent;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UHealthComponent> _HealthComponent;
 #pragma endregion
 
@@ -61,12 +58,4 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent , Category = "Rotating")
 	void Float();
 	bool bIsFloating = false;
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
-private:
-	UFUNCTION()
-	void Handle_ComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
 };

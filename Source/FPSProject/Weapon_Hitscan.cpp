@@ -5,6 +5,7 @@
 
 #include "FPSProjectCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -27,9 +28,13 @@ bool AWeapon_Hitscan::Fire_Implementation()
 {
 	if(!Super::Fire_Implementation())
 		return false;
-	
-	FVector const StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector const EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _TypeData->_Range;
+	FVector StartLoc = _Arrow->GetComponentLocation();
+	FVector EndLoc = StartLoc + GetActorForwardVector()*_TypeData->_Range;
+	if(OwningCharacter)
+	{
+		StartLoc = OwningCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
+		EndLoc = StartLoc + OwningCharacter->GetFirstPersonCameraComponent()->GetForwardVector()* _TypeData->_Range;
+	}
 	FHitResult Hit;
 	if(UKismetSystemLibrary::LineTraceSingle(GetWorld(),StartLoc,EndLoc,
 	UEngineTypes::ConvertToTraceType(ECC_Visibility),
