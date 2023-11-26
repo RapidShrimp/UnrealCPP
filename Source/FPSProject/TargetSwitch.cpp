@@ -29,5 +29,4 @@ void ATargetSwitch::Handle_TargetHit(AActor* DamagedActor, float Damage, const U
 	AController* InstigatedBy, AActor* DamageCauser)
 {
 	_Activator->CallActivate();
-	UE_LOG(LogTemp,Warning,TEXT("TARGET HIT"))
 }

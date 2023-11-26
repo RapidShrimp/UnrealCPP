@@ -36,10 +36,12 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=MatchManagement)
 	int _CountdownTimer;
-	FTimerHandle _TimerDecreaseCountdown;
+	FTimerHandle _Timer;
 	
 	UFUNCTION()
 	void DecreaseCountdown();
+	UFUNCTION()
+	void IncreaseCountdown();
 	UFUNCTION()
 	void Handle_GameRuleCompleted();
 	UFUNCTION()

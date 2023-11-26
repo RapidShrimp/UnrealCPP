@@ -37,7 +37,7 @@ void ARunnerGM::BeginPlay()
 		}
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(_TimerDecreaseCountdown,this,&ARunnerGM::DecreaseCountdown,1,true);
+	GetWorld()->GetTimerManager().SetTimer(_Timer,this,&ARunnerGM::IncreaseCountdown,1,true);
 }
 
 void ARunnerGM::DecreaseCountdown()
@@ -48,6 +48,11 @@ void ARunnerGM::DecreaseCountdown()
 		UE_LOG(LogTemp,Warning,TEXT("Round Over"));
 	}
 	OnTimeChanged.Broadcast(_CountdownTimer);
+}
+
+void ARunnerGM::IncreaseCountdown()
+{
+	_CountdownTimer++;
 }
 
 void ARunnerGM::Handle_GameRuleCompleted()
